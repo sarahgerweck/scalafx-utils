@@ -321,6 +321,7 @@ object UtilsBuild extends Build {
     .settings(Eclipse.settings: _*)
     .settings(publishSettings: _*)
     .settings(Release.settings: _*)
+    .settings(resolvers += sonatypeRelease)
     .settings(
       name := "ScalaFX Utils",
 
@@ -334,6 +335,5 @@ object UtilsBuild extends Build {
         scalaFx
       ),
 
-      resolvers += sonatypeRelease
     )
 }
