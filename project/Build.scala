@@ -24,10 +24,10 @@ sealed trait Basics {
   /* Metadata definitions */
   lazy val buildMetadata = Vector(
     licenses    := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    homepage    := Some(url("https://github.com/sarahgerweck/scala-utils")),
+    homepage    := Some(url("https://github.com/sarahgerweck/scalafx-utils")),
     description := "ScalaFX Utilities",
     startYear   := Some(2015),
-    scmInfo     := Some(ScmInfo(url("https://github.com/sarahgerweck/scala-utils"), "scm:git:git@github.com:sarahgerweck/scala-utils.git"))
+    scmInfo     := Some(ScmInfo(url("https://github.com/sarahgerweck/scalafx-utils"), "scm:git:git@github.com:sarahgerweck/scalafx-utils.git"))
   )
 }
 
