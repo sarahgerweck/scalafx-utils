@@ -284,6 +284,13 @@ object Dependencies {
   val scalaTest  = "org.scalatest"  %% "scalatest"  % scalaTestVersion
 
   /* ********************************************************************** */
+  /*                                ScalaFX                                 */
+  /* ********************************************************************** */
+  final val scalaFxVersion = "8.0.40-R8"
+
+  val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
+
+  /* ********************************************************************** */
   /*                                Helpers                                 */
   /* ********************************************************************** */
   private[this] def optionalize(optional: Boolean)(f: => Seq[ModuleID]): Seq[ModuleID] = {
@@ -323,7 +330,8 @@ object UtilsBuild extends Build {
         jclBridge   % "runtime,optional",
         log4jBridge % "runtime,optional",
         logback     % "runtime,optional",
-        gerweckUtil
+        gerweckUtil,
+        scalaFx
       ),
 
       resolvers += sonatypeRelease
