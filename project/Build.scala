@@ -16,6 +16,7 @@ sealed trait Basics {
   final val extraScalaVersions = Seq.empty
   final val buildJavaVersion   = "1.8"
   lazy  val defaultOptimize    = true
+  final val projectMainClass   = None
 
   lazy  val parallelBuild      = false
   lazy  val cachedResolution   = false
@@ -72,6 +73,7 @@ object BuildSettings extends Basics {
 
   val buildSettings = buildMetadata ++
                       siteSettings ++
+                      projectMainClass.toSeq.map(mainClass := Some(_)) ++
                       Seq (
     organization       :=  buildOrganization,
 
