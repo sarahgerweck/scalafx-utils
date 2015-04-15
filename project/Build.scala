@@ -229,6 +229,9 @@ object Dependencies {
   final val scalaParserVersion = "1.0.3"
   final val scalaXmlVersion    = "1.0.3"
   final val gerweckUtilVersion = "1.3.11"
+  final val scalazVersion      = "7.1.1"
+  final val shapelessVersion   = "2.1.0"
+  final val scallopVersion     = "0.9.5"
 
   val log4s       = "org.log4s"           %% "log4s"            % log4sVersion
   val slf4j       = "org.slf4j"           %  "slf4j-api"        % slf4jVersion
@@ -240,6 +243,9 @@ object Dependencies {
   val commonsIo   = "commons-io"          %  "commons-io"       % commonsIoVersion
   val groovy      = "org.codehaus.groovy" %  "groovy-all"       % groovyVersion
   val gerweckUtil = "org.gerweck.scala"   %% "gerweck-utils"    % gerweckUtilVersion
+  val scalaz      = "org.scalaz"          %% "scalaz-core"      % scalazVersion
+  val shapeless   = "com.chuusai"         %% "shapeless"        % shapelessVersion
+  val scallop     = "org.rogach"          %% "scallop"          % scallopVersion
 
   val commonsVfs = {
     val base      = "org.apache.commons"  %  "commons-vfs2"     % commonsVfsVersion
@@ -277,6 +283,9 @@ object Dependencies {
   val scalaCheck = "org.scalacheck" %% "scalacheck" % scalaCheckVersion
   val scalaTest  = "org.scalatest"  %% "scalatest"  % scalaTestVersion
 
+  /* ********************************************************************** */
+  /*                                Helpers                                 */
+  /* ********************************************************************** */
   private[this] def optionalize(optional: Boolean)(f: => Seq[ModuleID]): Seq[ModuleID] = {
     if (optional) {
       f map { _ % "optional" }
