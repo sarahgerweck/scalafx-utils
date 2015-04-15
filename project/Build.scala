@@ -332,8 +332,10 @@ object UtilsBuild extends Build {
         log4jBridge % "runtime,optional",
         logback     % "runtime,optional",
         gerweckUtil,
-        scalaFx
+        scalaFx,
+        scalaz
       ),
 
+      unmanagedJars in Compile += Attributed.blank(file(System.getenv("JAVA_HOME") + "/jre/lib/ext/jfxrt.jar"))
     )
 }
