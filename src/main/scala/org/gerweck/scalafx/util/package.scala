@@ -67,6 +67,33 @@ package object util {
     }
   }
 
+  implicit class RichObservable[A](val self: Observable[A]) {
+    private type F[X] = Observable[X]
+    @inline private def F = observableApplicative
+
+    def map[A1 >: A, B](f: A1 => B) = F.map(self)(f)
+    def <*>[B](f: Observable[A => B]): Observable[B] = F.ap(self)(f)
+    def tuple[B](f: Observable[B]): Observable[(A,B)] = F.tuple2(self, f)
+    final def *>[B](fb: F[B]): F[B] = F.apply2(self,fb)((_,b) => b)
+    final def <*[B](fb: F[B]): F[A] = F.apply2(self,fb)((a,_) => a)
+
+    import shapeless._
+    import shapeless.syntax._
+    import shapeless.ops.hlist._
+    import HList._
+    implicitly[HListOps[Int::Int::HNil]]
+    final def |@|[B](fb: F[B]) = new ObservableTupler(self::fb::HNil)
+
+    /** Alias for `|@|` */
+    final def ⊛[B](fb: F[B]) = |@|(fb)
+  }
+
+  object unwrapObservable extends Poly1 {
+    implicit def apply[T, A <% Observable[T]]: Case.Aux[A, T] = at[A]{ o => o.value }
+  }
+
+  trait TupleBuilder[]
+
   implicit class RichProperty[A](val inner: SimpleProperty[A]) extends AnyVal {
     def biMap[B <: AnyRef](push: A => B, pull: B => A): ObjectProperty[B] = {
       val original = push(inner.value)

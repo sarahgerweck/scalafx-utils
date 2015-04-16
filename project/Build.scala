@@ -333,7 +333,8 @@ object UtilsBuild extends Build {
         logback     % "runtime,optional",
         gerweckUtil,
         scalaFx,
-        scalaz
+        scalaz,
+        shapeless
       ),
 
       unmanagedJars in Compile += Attributed.blank(file(System.getenv("JAVA_HOME") + "/jre/lib/ext/jfxrt.jar"))
