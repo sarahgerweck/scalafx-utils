@@ -19,6 +19,7 @@ import Scalaz._
   */
 package object util {
   type Observable[A] = ObservableValue[A, _]
+  type SimpleProperty[A] = Property[A, _]
 
   implicit val observableApplicative = new Applicative[Observable] {
     def point[A](a: => A): Observable[A] = {
@@ -48,7 +49,7 @@ package object util {
     }
   }
 
-  implicit class RichProperty[A](val inner: Property[A, _]) extends AnyVal {
+  implicit class RichProperty[A](val inner: SimpleProperty[A]) extends AnyVal {
     def biMap[B <: AnyRef](push: A => B, pull: B => A): ObjectProperty[B] = {
       val original = push(inner.value)
       val op = ObjectProperty[B](original)

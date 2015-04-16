@@ -15,7 +15,7 @@ import scalafx.beans.property._
   * @author Sarah Gerweck <sarah@atscale.com>
   */
 trait PropertyBuilder[A] {
-  type Prop <: Property[A, _]
+  type Prop <: SimpleProperty[A]
   def makeNew(default: A): Prop
 }
 
@@ -52,7 +52,7 @@ object PropertyBuilder extends PropertyBuilderLP {
     def makeNew(default: String) = StringProperty(default)
   }
 
-  def apply[A](default: A)(implicit builder: PropertyBuilder[A]): Property[A, _] = {
+  def apply[A](default: A)(implicit builder: PropertyBuilder[A]): SimpleProperty[A] = {
     builder.makeNew(default)
   }
 }
