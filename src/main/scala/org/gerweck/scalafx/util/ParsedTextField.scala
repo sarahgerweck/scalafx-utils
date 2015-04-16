@@ -1,10 +1,3 @@
-/*
- * Copyright AtScale, Inc. 2015. All Rights Reserved.
- *
- * No part of this project or any of its contents may be reproduced, copied,
- * modified or adapted, without the prior written consent of AtScale, Inc..
- */
-
 package org.gerweck.scalafx.util
 
 import scalafx.scene.control.TextField
