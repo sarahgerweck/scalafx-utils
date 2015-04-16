@@ -21,6 +21,24 @@ package object util {
   type Observable[A] = ObservableValue[A, _]
   type SimpleProperty[A] = Property[A, _]
 
+  implicit val observableFunctor = new Functor[Observable] {
+    def map[A, B](a: Observable[A])(f: A => B): Observable[B] = {
+      @inline def recalculate(): B = f(a.value)
+
+      val originalValue = recalculate()
+
+      val prop = ObjectProperty[B](originalValue)
+
+      def changeHandler = {
+        prop.value = recalculate()
+      }
+
+      a onChange changeHandler
+      prop
+    }
+
+  }
+
   implicit val observableApplicative = new Applicative[Observable] {
     def point[A](a: => A): Observable[A] = {
       ObjectProperty[A](a)
