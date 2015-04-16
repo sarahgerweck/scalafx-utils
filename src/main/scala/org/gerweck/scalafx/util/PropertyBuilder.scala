@@ -55,9 +55,4 @@ object PropertyBuilder extends PropertyBuilderLP {
   def apply[A](default: A)(implicit builder: PropertyBuilder[A]): Property[A, _] = {
     builder.makeNew(default)
   }
-
-  val a = this(1)
-  val b = this("hello")
-  val c = this(Set(1, 2))
-  val d = this(false)
 }

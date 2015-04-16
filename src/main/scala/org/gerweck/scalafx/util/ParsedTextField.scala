@@ -15,7 +15,7 @@ import org.log4s._
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class ParsedTextField[A,B <: Parseable[A]](default: A)(implicit val parser: B) {
+class ParsedTextField[A, B <: Parseable[A]](default: A)(implicit val parser: B) {
 
   private val logger = getLogger("org.gerweck.scalafx.util.ParsedTextField")
 
