@@ -45,7 +45,7 @@ object PropertyBuilder extends PropertyBuilderLP {
     def makeNew(default: String) = StringProperty(default)
   }
 
-  def apply[A](default: A)(implicit builder: PropertyBuilder[A]): SimpleProperty[A] = {
+  def apply[A](default: A)(implicit builder: PropertyBuilder[A]): builder.Prop = {
     builder.makeNew(default)
   }
 }
