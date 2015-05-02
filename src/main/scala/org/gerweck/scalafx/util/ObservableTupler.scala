@@ -77,8 +77,6 @@ class ObservableTupler
   def apply[Func, Result](f: Func)(implicit ffp: FnFromProduct.Aux[HLParams => Result, Func], ftp: FnToProduct.Aux[Func, HLParams => Result]): ObservableValue[Result, Result] = {
     hlisted map ftp(f)
   }
-
-//  def apply[C](f: TParams => C): Observable[C] = tupled map f
 }
 
 object ObservableUnwrapper extends Poly1 {
