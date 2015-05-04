@@ -88,28 +88,6 @@ class RichTuple[A <: Product](val self: A) extends AnyVal {
     prop
   }
 
-  import shapeless.ops.tuple.{ ToTraversable, Mapper }
-  import shapeless.syntax.std.tuple._
-
-  def observe2[Unwrapped <: Product]
-              (implicit lister: ToTraversable.Aux[A, List, Observable[_]],
-                        uw: Mapper.Aux[A, ObservableUnwrapper.type, Unwrapped]):
-            ObservableValue[Unwrapped, Unwrapped] = {
-    def calculate(): Unwrapped = self.map(ObservableUnwrapper)
-
-    val original = calculate()
-    val prop = ObjectProperty[Unwrapped](original)
-
-    for {
-      component <- self.to[List]
-    } {
-      component onChange {
-        prop.value = calculate()
-      }
-    }
-    prop
-  }
-
   //  def omap[B]
 }
 
