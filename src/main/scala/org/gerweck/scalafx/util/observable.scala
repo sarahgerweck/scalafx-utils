@@ -54,6 +54,63 @@ trait ObservableImplicits {
 
   implicit def enrichObservable[A, B](o: ObservableValue[A, B]) = new RichObservable(o)
   implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
+  implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
+}
+
+class RichTuple[A <: Product](val self: A) extends AnyVal {
+  import shapeless._
+  import shapeless.syntax._
+  import shapeless.ops.hlist._
+
+  /* It's possible to do this operation without conversion directly using
+   * Shapeless's `tuple` package, but it can't infer the exact output type,
+   * which is far less useful.
+   */
+  def observe
+      [L <: HList, Unwrapped <: HList, Tupled <: Product]
+      (implicit tohl: Generic.Aux[A, L],
+                lister: ToTraversable.Aux[L, List, Observable[_]],
+                uw: Mapper.Aux[ObservableUnwrapper.type, L, Unwrapped],
+                tplr: Tupler.Aux[Unwrapped, Tupled]): ObservableValue[Tupled, Tupled] = {
+    val asHList: L = tohl.to(self)
+    def calculate(): Tupled = uw(asHList).tupled
+
+    val original = calculate()
+    val prop = ObjectProperty[Tupled](original)
+
+    for {
+      component <- asHList.to[List]
+    } {
+      component onChange {
+        prop.value = calculate()
+      }
+    }
+    prop
+  }
+
+  import shapeless.ops.tuple.{ ToTraversable, Mapper }
+  import shapeless.syntax.std.tuple._
+
+  def observe2[Unwrapped <: Product]
+              (implicit lister: ToTraversable.Aux[A, List, Observable[_]],
+                        uw: Mapper.Aux[A, ObservableUnwrapper.type, Unwrapped]):
+            ObservableValue[Unwrapped, Unwrapped] = {
+    def calculate(): Unwrapped = self.map(ObservableUnwrapper)
+
+    val original = calculate()
+    val prop = ObjectProperty[Unwrapped](original)
+
+    for {
+      component <- self.to[List]
+    } {
+      component onChange {
+        prop.value = calculate()
+      }
+    }
+    prop
+  }
+
+  //  def omap[B]
 }
 
 class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
