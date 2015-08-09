@@ -230,7 +230,7 @@ object Dependencies {
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "1.3.15"
   final val scalazVersion      = "7.1.3"
-  final val shapelessVersion   = "2.1.0"
+  final val shapelessVersion   = "2.2.5"
   final val scallopVersion     = "0.9.5"
 
   val log4s       = "org.log4s"           %% "log4s"            % log4sVersion
