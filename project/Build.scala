@@ -12,7 +12,7 @@ import Helpers._
 sealed trait Basics {
   final val buildOrganization  = "org.gerweck.scala"
 
-  final val buildScalaVersion  = "2.11.6"
+  final val buildScalaVersion  = "2.11.7"
   final val extraScalaVersions = Seq.empty
   final val buildJavaVersion   = "1.8"
   lazy  val defaultOptimize    = true
