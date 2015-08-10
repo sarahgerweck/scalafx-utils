@@ -209,8 +209,9 @@ object Eclipse {
   val settings = Seq (
     EclipseKeys.createSrc            := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
     EclipseKeys.projectFlavor        := EclipseProjectFlavor.Scala,
-    EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE17),
-    EclipseKeys.withSource           := true
+    EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE18),
+    EclipseKeys.withSource           := true,
+    EclipseKeys.eclipseOutput        := Some("target/scala-2.11/classes")
   )
 }
 
