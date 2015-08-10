@@ -42,6 +42,7 @@ trait ObservableImplicits {
         val newVal = recalculate()
         if (prevValue != newVal) {
           prop.value = newVal
+          prevValue = newVal
         }
       }
 
