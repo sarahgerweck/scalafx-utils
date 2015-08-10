@@ -141,7 +141,7 @@ class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
 
   def map[B](f: A => B) = oapp.map(self)(f)
   def flatMap[B](f: A => Observable[B]) = oapp.bind(self)(f)
-  def <*>[B](f: Observable[A => B]): Observable[B] = oapp.ap(self)(f)
+  def <*>[B](f: Observable[A => B]): ObservableValue[B, B] = oapp.ap(self)(f)
   def tuple[B](f: Observable[B]): Observable[(A,B)] = oapp.tuple2(self, f)
   final def *>[B](fb: ObjObs[B]): Observable[B] = oapp.apply2(self,fb)((_,b) => b)
   final def <*[B](fb: ObjObs[B]): Observable[A] = oapp.apply2(self,fb)((a,_) => a)
