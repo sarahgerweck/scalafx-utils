@@ -10,7 +10,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import Helpers._
 
 sealed trait Basics {
-  final val buildOrganization  = "org.gerweck.scala"
+  final val buildOrganization  = "org.gerweck.scalafx"
 
   final val buildScalaVersion  = "2.11.7"
   final val extraScalaVersions = Seq.empty
