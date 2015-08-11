@@ -10,16 +10,18 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import Helpers._
 
 sealed trait Basics {
-  final val buildOrganization  = "org.gerweck.scalafx"
+  final val buildOrganization     = "org.gerweck.scalafx"
+  final val buildOrganizationName = "Sarah Gerweck"
+  final val buildOrganizationUrl  = Some("https://github.com/sarahgerweck")
 
-  final val buildScalaVersion  = "2.11.7"
-  final val extraScalaVersions = Seq.empty
-  final val buildJavaVersion   = "1.8"
-  lazy  val defaultOptimize    = true
-  final val projectMainClass   = None
+  final val buildScalaVersion     = "2.11.7"
+  final val extraScalaVersions    = Seq.empty
+  final val buildJavaVersion      = "1.8"
+  lazy  val defaultOptimize       = true
+  final val projectMainClass      = None
 
-  lazy  val parallelBuild      = false
-  lazy  val cachedResolution   = false
+  lazy  val parallelBuild         = false
+  lazy  val cachedResolution      = false
 
   /* Metadata definitions */
   lazy val buildMetadata = Vector(
@@ -75,17 +77,19 @@ object BuildSettings extends Basics {
                       siteSettings ++
                       projectMainClass.toSeq.map(mainClass := Some(_)) ++
                       Seq (
-    organization       :=  buildOrganization,
+    organization         :=  buildOrganization,
+    organizationName     :=  buildOrganizationName,
+    organizationHomepage :=  buildOrganizationUrl map { url _ },
 
-    scalaVersion       :=  buildScalaVersion,
-    crossScalaVersions :=  buildScalaVersions,
+    scalaVersion         :=  buildScalaVersion,
+    crossScalaVersions   :=  buildScalaVersions,
 
-    scalacOptions      ++= buildScalacOptions,
-    javacOptions       ++= buildJavacOptions,
-    autoAPIMappings    :=  true,
+    scalacOptions        ++= buildScalacOptions,
+    javacOptions         ++= buildJavacOptions,
+    autoAPIMappings      :=  true,
 
-    updateOptions      :=  updateOptions.value.withCachedResolution(cachedResolution),
-    parallelExecution  :=  parallelBuild,
+    updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
+    parallelExecution    :=  parallelBuild,
 
     evictionWarningOptions in update :=
       EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
