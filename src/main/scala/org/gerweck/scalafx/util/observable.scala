@@ -8,6 +8,13 @@ import scalafx.beans.property._
 import scalafx.beans.value._
 
 trait ObservableImplicits {
+  /* NOTE: (Sarah) I believe that the synchronization in these helpers is not
+   * _really_ required in the JavaFX threading model. However, the overhead of
+   * uncontended synchronization is relatively low, and typical UIs won't have
+   * enough change events for it to be a serious issue. (If you're updating
+   * a property in a tight loop, I expect you'll have bigger performance
+   * issues.)
+   */
   implicit val observableInstances = new Applicative[Observable] with Functor[Observable] with Monad[Observable] {
     /* Map can be derived from `ap`, but this adds less overhead. */
     override def map[A, B](a: Observable[A])(f: A => B): ObservableValue[B, B] = {
@@ -18,7 +25,7 @@ trait ObservableImplicits {
       val prop = ObjectProperty[B](originalValue)
 
       var prevValue = originalValue
-      def changeHandler = {
+      def changeHandler = prop.synchronized {
         val newVal = recalculate()
         if (prevValue != newVal) {
           prop.value = recalculate()
@@ -44,7 +51,7 @@ trait ObservableImplicits {
 
       var prevValue = originalValue
 
-      def changeHandler = {
+      def changeHandler = prop.synchronized {
         val newVal = recalculate()
         if (prevValue != newVal) {
           prop.value = newVal
@@ -74,7 +81,7 @@ trait ObservableImplicits {
 
       var prevValue = originalValue
 
-      def innerHandle() = {
+      def innerHandle() = prop.synchronized {
         val newVal = calc()
         if (prevValue != newVal) {
           prop.value = newVal
@@ -84,7 +91,7 @@ trait ObservableImplicits {
       var innerSub = oa() onChange innerHandle
 
       var prevOuter = oa()
-      def outerHandle() = {
+      def outerHandle() = prop.synchronized {
         val newOuter = oa()
         /* We need reference equality here: we're subscribing to a specific object. */
         if (prevOuter ne newOuter) {
