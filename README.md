@@ -14,4 +14,4 @@ This code is offered as is with now guarantees.
 
 To use ScalaFX, add the following to your SBT build:
 
-    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.1.0"
+    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.2.0"
