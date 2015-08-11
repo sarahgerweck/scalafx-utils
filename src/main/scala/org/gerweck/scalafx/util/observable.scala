@@ -17,8 +17,13 @@ trait ObservableImplicits {
 
       val prop = ObjectProperty[B](originalValue)
 
+      var prevValue = originalValue
       def changeHandler = {
-        prop.value = recalculate()
+        val newVal = recalculate()
+        if (prevValue != newVal) {
+          prop.value = recalculate()
+          prevValue = newVal
+        }
       }
 
       a onChange changeHandler
