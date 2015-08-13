@@ -10,10 +10,10 @@ import scalafx.scene.Node
 import scalafx.scene.control._
 import scalafx.scene.input._
 import scalafx.scene.layout.GridPane
+import scalafx.scene.text.Text
 import scalafx.util.StringConverter
 
 import scalaz._
-import Scalaz._
 
 /** Various implicits and global utilities for ScalaFX work.
   *
@@ -24,8 +24,6 @@ package object util extends ObservableImplicits {
   type SimpleProperty[A] = Property[A, _]
 
   object TextDisplay {
-    import scalafx.beans.property._
-    import scalafx.scene.text.Text
     def apply(text: ObservableValue[String,String]) = {
       val t = new scalafx.scene.text.Text
       t.text <== text

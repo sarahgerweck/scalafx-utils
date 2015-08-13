@@ -13,14 +13,11 @@ import scalaz._
 import Scalaz._
 
 import shapeless._
-import shapeless.syntax._
 import shapeless.ops.hlist._
 import shapeless.ops.function._
 
 import scalafx.beans.property.ObjectProperty
 import scalafx.beans.value.ObservableValue
-
-import ObservableTupler._
 
 /**
   *

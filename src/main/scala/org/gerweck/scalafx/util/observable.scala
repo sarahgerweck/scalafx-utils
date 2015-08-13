@@ -115,7 +115,6 @@ trait ObservableImplicits {
 
 class RichTuple[A <: Product](val self: A) extends AnyVal {
   import shapeless._
-  import shapeless.syntax._
   import shapeless.ops.hlist._
 
   /* It's possible to do this operation without conversion directly using
