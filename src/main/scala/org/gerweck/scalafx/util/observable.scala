@@ -110,6 +110,8 @@ trait ObservableImplicits {
   }
 
   implicit def enrichObservable[A, B](o: ObservableValue[A, B]) = new RichObservable(o)
+  implicit def enrichObservableOfIterable[A, B <% Iterable[A]](ooi: ObservableValue[B, B]) = new ObservableOfIterable[A, B](ooi)
+  implicit def enrichObservableOfMapLike[A, B, C <% Iterable[(A, B)]](ooml: ObservableValue[C, C]) = new ObservableOfMapLike[A, B, C](ooml)
   implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
   implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
 }
@@ -164,11 +166,35 @@ final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal
   final def ⊛[B, B1](fb: ObservableValue[B, B1]) = |@|(fb)
 }
 
-final class ObservableOfIterable[A](val self: ObservableValue[Iterable[A], Iterable[A]]) extends AnyVal {
-  def toBuffer: ObservableBuffer[A] = {
+final class ObservableOfIterable[A, B <% Iterable[A]](val self: ObservableValue[B, B]) {
+  def observeBuffer: ObservableBuffer[A] = {
     val buff = ObservableBuffer(self.value.toSeq)
     self onChange { (_, oldV, newV) => fillCollection(buff.delegate, newV) }
     buff
+  }
+  def observeSet: ObservableSet[A] = {
+    val set = ObservableSet[A](self.value.toSet.toSeq: _*)
+    self onChange { (_, oldV, newV) =>
+      val newSet = newV.toSet
+      if (oldV.toSet != newSet) {
+        set.clear()
+        set ++= newSet
+      }
+    }
+    set
+  }
+}
+final class ObservableOfMapLike[A, B, C <% Iterable[(A, B)]](val self: ObservableValue[C, C]) {
+  def observeMap: ObservableMap[A, B] = {
+    val map = ObservableMap[A, B](self.value.toMap.toSeq: _*)
+    self onChange { (_, oldV, newV) =>
+      val newMap = newV.toMap
+      if (oldV.toMap != newV.toMap) {
+        map.clear()
+        map ++= newMap
+      }
+    }
+    map
   }
 }
 
