@@ -180,31 +180,13 @@ object Release {
   import sbtrelease._
   import ReleaseStateTransformations._
   import ReleasePlugin._
-  import ReleaseKeys._
-  import Utilities._
-  import com.typesafe.sbt.SbtPgp.PgpKeys._
+  import ReleasePlugin.autoImport._
+  import com.typesafe.sbt.SbtPgp.PgpKeys
 
-  val settings = releaseSettings ++ Seq (
-    ReleaseKeys.crossBuild := true,
-    ReleaseKeys.releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishArtifacts.copy(action = publishSignedAction),
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+  val settings = Seq (
+    releaseCrossBuild := true,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
-
-  lazy val publishSignedAction = { st: State =>
-    val extracted = st.extract
-    val ref = extracted.get(thisProjectRef)
-    extracted.runAggregated(publishSigned in Global in ref, st)
-  }
 }
 
 object Eclipse {
