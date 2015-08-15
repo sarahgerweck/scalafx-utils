@@ -114,7 +114,7 @@ trait ObservableImplicits {
   implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
 }
 
-class RichTuple[A <: Product](val self: A) extends AnyVal {
+final class RichTuple[A <: Product](val self: A) extends AnyVal {
   import shapeless._
   import shapeless.ops.hlist._
 
@@ -147,7 +147,7 @@ class RichTuple[A <: Product](val self: A) extends AnyVal {
   //  def omap[B]
 }
 
-class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
+final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
   private type ObjObs[X] = ObservableValue[X, X]
   @inline private def oapp = observableInstances
 
@@ -164,7 +164,7 @@ class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
   final def ⊛[B, B1](fb: ObservableValue[B, B1]) = |@|(fb)
 }
 
-class ObservableOfIterable[A](val self: ObservableValue[Iterable[A], Iterable[A]]) extends AnyVal {
+final class ObservableOfIterable[A](val self: ObservableValue[Iterable[A], Iterable[A]]) extends AnyVal {
   def toBuffer: ObservableBuffer[A] = {
     val buff = ObservableBuffer(self.value.toSeq)
     self onChange { (_, oldV, newV) => fillCollection(buff.delegate, newV) }
@@ -172,7 +172,7 @@ class ObservableOfIterable[A](val self: ObservableValue[Iterable[A], Iterable[A]
   }
 }
 
-class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
+final class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
   def biMap[B <: AnyRef](push: A => B, pull: B => A): ObjectProperty[B] = {
     val original = push(inner.value)
     val op = ObjectProperty[B](original)
