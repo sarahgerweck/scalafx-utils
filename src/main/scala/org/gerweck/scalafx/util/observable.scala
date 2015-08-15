@@ -6,6 +6,7 @@ import scalaz._
 
 import scalafx.beans.property._
 import scalafx.beans.value._
+import scalafx.collections._
 
 trait ObservableImplicits {
   /* NOTE: (Sarah) I believe that the synchronization in these helpers is not
@@ -161,6 +162,14 @@ class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
 
   /** Alias for `|@|` */
   final def ⊛[B, B1](fb: ObservableValue[B, B1]) = |@|(fb)
+}
+
+class ObservableOfIterable[A](val self: ObservableValue[Iterable[A], Iterable[A]]) extends AnyVal {
+  def toBuffer: ObservableBuffer[A] = {
+    val buff = ObservableBuffer(self.value.toSeq)
+    self onChange { (_, oldV, newV) => fillCollection(buff.delegate, newV) }
+    buff
+  }
 }
 
 class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
