@@ -2,7 +2,8 @@ import sbt._
 import Keys._
 
 import com.typesafe.sbt.SbtSite.site
-import sbtrelease.ReleasePlugin._
+import sbtrelease.ReleasePlugin.autoImport._
+import com.typesafe.sbt.SbtPgp.autoImport._
 
 import scala.util.Properties.envOrNone
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
@@ -16,12 +17,12 @@ sealed trait Basics {
 
   final val buildScalaVersion     = "2.11.7"
   final val extraScalaVersions    = Seq.empty
-  final val buildJavaVersion      = "1.8"
+  final val minimumJavaVersion    = "1.8"
   lazy  val defaultOptimize       = true
   final val projectMainClass      = None
 
   lazy  val parallelBuild         = false
-  lazy  val cachedResolution      = false
+  lazy  val cachedResolution      = true
 
   /* Metadata definitions */
   lazy val buildMetadata = Vector(
@@ -31,6 +32,18 @@ sealed trait Basics {
     startYear   := Some(2015),
     scmInfo     := Some(ScmInfo(url("https://github.com/sarahgerweck/scalafx-utils"), "scm:git:git@github.com:sarahgerweck/scalafx-utils.git"))
   )
+
+  lazy val developerInfo = {
+    <developers>
+      <developer>
+        <id>sarah</id>
+        <name>Sarah Gerweck</name>
+        <email>sarah.a180@gmail.com</email>
+        <url>https://github.com/sarahgerweck</url>
+        <timezone>America/Los_Angeles</timezone>
+      </developer>
+    </developers>
+  }
 }
 
 object BuildSettings extends Basics {
@@ -44,12 +57,11 @@ object BuildSettings extends Basics {
   lazy val unusedWarn   = boolFlag("UNUSED_WARNINGS") getOrElse false
   lazy val importWarn   = boolFlag("IMPORT_WARNINGS") getOrElse false
 
-  /* Scala build setup */
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
   val buildScalacOptions = Seq (
     "-unchecked",
     "-feature",
-    "-target:jvm-" + buildJavaVersion
+    "-target:jvm-" + minimumJavaVersion
   ) ++ (
     if (deprecation) Seq("-deprecation") else Seq.empty
   ) ++ (
@@ -64,8 +76,8 @@ object BuildSettings extends Basics {
 
   /* Java build setup */
   val buildJavacOptions = Seq(
-    "-target", buildJavaVersion,
-    "-source", buildJavaVersion
+    "-target", minimumJavaVersion,
+    "-source", minimumJavaVersion
   ) ++ (
     if (deprecation) Seq("-Xlint:deprecation") else Seq.empty
   )
@@ -124,7 +136,7 @@ object Resolvers {
   val sonatypeStaging = "Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 }
 
-object PublishSettings {
+object Publish {
   import BuildSettings._
   import Resolvers._
   import Helpers._
@@ -141,7 +153,7 @@ object PublishSettings {
     }
   ).toSeq
 
-  val publishSettings = sonaCreds ++ Seq (
+  val settings = sonaCreds ++ Seq (
     publishMavenStyle       := true,
     pomIncludeRepository    := { _ => false },
     publishArtifact in Test := false,
@@ -153,23 +165,13 @@ object PublishSettings {
         Some(sonatypeStaging)
     },
 
-    pomExtra                := (
-      <developers>
-        <developer>
-          <id>sarah</id>
-          <name>Sarah Gerweck</name>
-          <email>sarah.a180@gmail.com</email>
-          <url>https://github.com/sarahgerweck</url>
-          <timezone>America/Los_Angeles</timezone>
-        </developer>
-      </developers>
-    )
+    pomExtra                := developerInfo
   )
 
   /** Use this if you don't want to publish a certain module.
     * (SBT's release plugin doesn't handle this well.)
     */
-  val falsePublishSettings = publishSettings ++ Seq (
+  val falseSettings = settings ++ Seq (
     publishArtifact in Compile := false,
     publishArtifact in Test := false,
     publishTo := Some(Resolver.file("phony-repo", file("target/repo")))
@@ -177,12 +179,6 @@ object PublishSettings {
 }
 
 object Release {
-  import sbtrelease._
-  import ReleaseStateTransformations._
-  import ReleasePlugin._
-  import ReleasePlugin.autoImport._
-  import com.typesafe.sbt.SbtPgp.PgpKeys
-
   val settings = Seq (
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value
@@ -206,7 +202,7 @@ object Dependencies {
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
   final val slf4jVersion       = "1.7.12"
-  final val log4sVersion       = "1.1.5"
+  final val log4sVersion       = "1.2.0"
   final val logbackVersion     = "1.1.3"
   final val threeTenVersion    = "1.3"
   final val commonsVfsVersion  = "2.0"
@@ -300,13 +296,12 @@ object UtilsBuild extends Build {
   import BuildSettings._
   import Resolvers._
   import Dependencies._
-  import PublishSettings._
   import Helpers._
 
   lazy val root = (project in file ("."))
     .settings(buildSettings: _*)
     .settings(Eclipse.settings: _*)
-    .settings(publishSettings: _*)
+    .settings(Publish.settings: _*)
     .settings(Release.settings: _*)
     .settings(resolvers += sonatypeRelease)
     .settings(
