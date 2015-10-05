@@ -269,7 +269,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                ScalaFX                                 */
   /* ********************************************************************** */
-  final val scalaFxVersion = "8.0.40-R8"
+  final val scalaFxVersion = "8.0.60-R9"
 
   val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
 
