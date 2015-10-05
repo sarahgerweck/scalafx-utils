@@ -110,8 +110,8 @@ trait ObservableImplicits {
   }
 
   implicit def enrichObservable[A, B](o: ObservableValue[A, B]) = new RichObservable(o)
-  implicit def enrichObservableOfIterable[A, B <% Iterable[A]](ooi: ObservableValue[B, B]) = new ObservableOfIterable[A, B](ooi)
-  implicit def enrichObservableOfMapLike[A, B, C <% Iterable[(A, B)]](ooml: ObservableValue[C, C]) = new ObservableOfMapLike[A, B, C](ooml)
+  implicit def enrichObservableOfIterable[A, B](ooi: ObservableValue[B, B])(implicit ev1: B => Iterable[A]) = new ObservableOfIterable[A, B](ooi)
+  implicit def enrichObservableOfMapLike[A, B, C](ooml: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) = new ObservableOfMapLike[A, B, C](ooml)
   implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
   implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
 }
@@ -166,7 +166,7 @@ final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal
   final def ⊛[B, B1](fb: ObservableValue[B, B1]) = |@|(fb)
 }
 
-final class ObservableOfIterable[A, B <% Iterable[A]](val self: ObservableValue[B, B]) {
+final class ObservableOfIterable[A, B](val self: ObservableValue[B, B])(implicit ev1: B => Iterable[A]) {
   def observeBuffer: ObservableBuffer[A] = {
     val buff = ObservableBuffer(self.value.toSeq)
     self onChange { (_, oldV, newV) => fillCollection(buff.delegate, newV) }
@@ -184,7 +184,7 @@ final class ObservableOfIterable[A, B <% Iterable[A]](val self: ObservableValue[
     set
   }
 }
-final class ObservableOfMapLike[A, B, C <% Iterable[(A, B)]](val self: ObservableValue[C, C]) {
+final class ObservableOfMapLike[A, B, C](val self: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) {
   def observeMap: ObservableMap[A, B] = {
     val map = ObservableMap[A, B](self.value.toMap.toSeq: _*)
     self onChange { (_, oldV, newV) =>

@@ -70,7 +70,7 @@ class ObservableTupler
 }
 
 object ObservableUnwrapper extends Poly1 {
-  implicit def apply[T, U, A <% ObservableValue[T, U]]: Case.Aux[A, T] = at[A]{ o => o.value }
+  implicit def apply[T, U, A](implicit ev1: A => ObservableValue[T, U]): Case.Aux[A, T] = at[A]{ o => o.value }
 }
 
 object ObservableTupler {
