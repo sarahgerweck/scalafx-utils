@@ -29,7 +29,7 @@ trait ObservableImplicits {
       def changeHandler = prop.synchronized {
         val newVal = recalculate()
         if (prevValue != newVal) {
-          prop.value = recalculate()
+          prop.value = newVal
           prevValue = newVal
         }
       }
