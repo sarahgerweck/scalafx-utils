@@ -114,6 +114,10 @@ trait ObservableImplicits {
   implicit def enrichObservableOfMapLike[A, B, C](ooml: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) = new ObservableOfMapLike[A, B, C](ooml)
   implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
   implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
+
+  implicit def enrichObservableBuffer[A](ob: ObservableBuffer[A]) = new RichObservableBuffer(ob)
+  implicit def enrichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](oa: ObservableArray[A, B, C]) = new RichObservableArray(oa)
+  implicit def enrichObservableSet[A](os: ObservableSet[A]) = new RichObservableSet(os)
 }
 
 final class RichTuple[A <: Product](val self: A) extends AnyVal {
@@ -217,5 +221,65 @@ final class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
       }
     }
     op
+  }
+}
+
+sealed trait ToObservableOps[-A, +B] {
+  def recalculate(a: A): B
+  def onChange(a: A)(b: => Unit): Unit
+}
+object ToObservableOps {
+  implicit def obOps[A] = new ToObservableOps[ObservableBuffer[A], Seq[A]] {
+    def recalculate(oba: ObservableBuffer[A]) = oba.toVector
+    def onChange(oba: ObservableBuffer[A])(b: => Unit) = oba onChange b
+  }
+  implicit def oaOps[A] = new ToObservableOps[ObservableArray[A, _, _], Seq[A]] {
+    def recalculate(oaa: ObservableArray[A, _, _]) = oaa.toVector
+    def onChange(oaa: ObservableArray[A, _, _])(b: => Unit) = oaa onChange b
+  }
+  implicit def osOps[A] = new ToObservableOps[ObservableSet[A], collection.immutable.Set[A]] {
+    def recalculate(os: ObservableSet[A]) = os.toSet
+    def onChange(os: ObservableSet[A])(b: => Unit) = os onChange b
+  }
+}
+
+object RichToObservable {
+  @inline final def toObservable[A, B](a: A)(implicit ops: ToObservableOps[A, B]): ObservableValue[B, B] = {
+    @inline def recalculate(): B = ops.recalculate(a)
+    val originalValue = recalculate()
+    val prop = ObjectProperty[B](originalValue)
+    var prevValue = originalValue
+    ops.onChange(a) {
+      prop.synchronized {
+        val newVal = recalculate()
+        if (prevValue != newVal) {
+          prop.value = newVal
+          prevValue = newVal
+        }
+      }
+    }
+    prop
+  }
+}
+
+sealed trait RichObservableSeqLike[A] extends Any {
+  def observableSeqValue: ObservableValue[Seq[A], Seq[A]]
+}
+
+final class RichObservableBuffer[A](val obs: ObservableBuffer[A]) extends AnyVal with RichObservableSeqLike[A] {
+  def observableSeqValue: ObservableValue[Seq[A], Seq[A]] = {
+    RichToObservable.toObservable(obs)
+  }
+}
+
+final class RichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](val oaa: ObservableArray[A, B, C]) extends AnyVal with RichObservableSeqLike[A] {
+  def observableSeqValue: ObservableValue[Seq[A], Seq[A]] = {
+    RichToObservable.toObservable(oaa)
+  }
+}
+
+final class RichObservableSet[A](val os: ObservableSet[A]) extends AnyVal {
+  def observableSetValue: ObservableValue[Set[A], Set[A]] = {
+    RichToObservable.toObservable(os)
   }
 }
