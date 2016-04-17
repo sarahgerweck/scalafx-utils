@@ -15,7 +15,7 @@ sealed trait Basics {
   final val buildOrganizationName = "Sarah Gerweck"
   final val buildOrganizationUrl  = Some("https://github.com/sarahgerweck")
 
-  final val buildScalaVersion     = "2.11.7"
+  final val buildScalaVersion     = "2.11.8"
   final val extraScalaVersions    = Seq.empty
   final val minimumJavaVersion    = "1.8"
   lazy  val defaultOptimize       = true
@@ -201,9 +201,9 @@ object Dependencies {
   /* ********************************************************************** */
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
-  final val slf4jVersion       = "1.7.12"
-  final val log4sVersion       = "1.2.0"
-  final val logbackVersion     = "1.1.3"
+  final val slf4jVersion       = "1.7.21"
+  final val log4sVersion       = "1.3.0"
+  final val logbackVersion     = "1.1.7"
   final val threeTenVersion    = "1.3"
   final val commonsVfsVersion  = "2.0"
   final val commonsIoVersion   = "2.4"
@@ -211,9 +211,9 @@ object Dependencies {
   final val groovyVersion      = "2.4.4"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
-  final val gerweckUtilVersion = "1.5.1"
-  final val scalazVersion      = "7.1.4"
-  final val shapelessVersion   = "2.2.5"
+  final val gerweckUtilVersion = "1.6.0"
+  final val scalazVersion      = "7.2.2"
+  final val shapelessVersion   = "2.3.0"
   final val scallopVersion     = "0.9.5"
 
   val log4s       = "org.log4s"           %% "log4s"               % log4sVersion
