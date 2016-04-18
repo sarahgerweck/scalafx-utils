@@ -9,3 +9,8 @@ end users will be listed here.
    * Updates to several dependencies.
       * This includes Shapeless 2.3.0, which may introduce binary
         incompatibilities if you have compiled against a different version.
+
+### 0.7.0
+
+   * Modified Scalaz instance to add `ReadOnlyObjectProperty` instances and
+     improve specificity of the `ObservableValue[A, _]` instances.

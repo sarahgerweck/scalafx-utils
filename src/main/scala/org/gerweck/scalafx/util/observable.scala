@@ -18,7 +18,7 @@ trait ObservableImplicits {
    */
   implicit val observableInstances = new Applicative[Observable] with Functor[Observable] with Monad[Observable] {
     /* Map can be derived from `ap`, but this adds less overhead. */
-    override def map[A, B](a: Observable[A])(f: A => B): ObservableValue[B, B] = {
+    override def map[A, B](a: Observable[A])(f: A => B): ReadOnlyObjectProperty[B] = {
       @inline def recalculate(): B = f(a.value)
 
       val originalValue = recalculate()
@@ -38,12 +38,12 @@ trait ObservableImplicits {
       prop
     }
 
-    def point[A](a: => A): ObservableValue[A, A] = {
+    def point[A](a: => A): ReadOnlyObjectProperty[A] = {
       ObjectProperty[A](a)
     }
 
     /* Ap can be derived from `point` and `bind`, but this has less overhead. */
-    override def ap[A, B](fa: => Observable[A])(f: => Observable[A => B]): ObservableValue[B, B] = {
+    override def ap[A, B](fa: => Observable[A])(f: => Observable[A => B]): ReadOnlyObjectProperty[B] = {
       @inline def recalculate(): B = (f.value)(fa.value)
 
       val originalValue = recalculate()
@@ -67,12 +67,55 @@ trait ObservableImplicits {
     }
 
     /* Aka `flatMap` */
-    override def bind[A, B](fa: Observable[A])(f: A => Observable[B]): ObservableValue[B, B] = {
+    override def bind[A, B](fa: Observable[A])(f: A => Observable[B]): ReadOnlyObjectProperty[B] = {
       join(map(fa)(f))
     }
 
     /* Aka `flatten` */
-    override def join[A](ooa: Observable[Observable[A]]): ObservableValue[A, A] = {
+    override def join[A](ooa: Observable[Observable[A]]): ReadOnlyObjectProperty[A] = {
+      @inline def oa() = ooa.value
+      @inline def calc(): A = oa().value
+
+      val originalValue = calc()
+
+      val prop = ObjectProperty[A](originalValue)
+
+      var prevValue = originalValue
+
+      def innerHandle() = prop.synchronized {
+        val newVal = calc()
+        if (prevValue != newVal) {
+          prop.value = newVal
+          prevValue = newVal
+        }
+      }
+      var innerSub = oa() onChange innerHandle
+
+      var prevOuter = oa()
+      def outerHandle() = prop.synchronized {
+        val newOuter = oa()
+        /* We need reference equality here: we're subscribing to a specific object. */
+        if (prevOuter ne newOuter) {
+          innerSub.cancel()
+          innerSub = newOuter onChange innerHandle
+          prevOuter = newOuter
+          innerHandle()
+        }
+      }
+
+      ooa onChange outerHandle
+
+      prop
+    }
+  }
+
+  implicit val readOnlyObjectPropertyInstances = new Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
+    override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = observableInstances.map(a)(f)
+    override def point[A](a: => A): ReadOnlyObjectProperty[A] = observableInstances.point(a)
+    override def ap[A, B](fa: => ReadOnlyObjectProperty[A])(f: => ReadOnlyObjectProperty[A => B]): ReadOnlyObjectProperty[B] = observableInstances.ap(fa)(f)
+    override def bind[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = observableInstances.bind(fa)(f)
+    override def join[A](ooa: ReadOnlyObjectProperty[ReadOnlyObjectProperty[A]]): ReadOnlyObjectProperty[A] = {
+      /* NOTE: this is copy-pasted from `observableInstances`. TBD: Find a way to share this. */
       @inline def oa() = ooa.value
       @inline def calc(): A = oa().value
 
@@ -244,7 +287,7 @@ object ToObservableOps {
 }
 
 object RichToObservable {
-  @inline final def toObservable[A, B](a: A)(implicit ops: ToObservableOps[A, B]): ObservableValue[B, B] = {
+  @inline final def toObservable[A, B](a: A)(implicit ops: ToObservableOps[A, B]): ReadOnlyObjectProperty[B] = {
     @inline def recalculate(): B = ops.recalculate(a)
     val originalValue = recalculate()
     val prop = ObjectProperty[B](originalValue)
@@ -263,23 +306,23 @@ object RichToObservable {
 }
 
 sealed trait RichObservableSeqLike[A] extends Any {
-  def observableSeqValue: ObservableValue[Seq[A], Seq[A]]
+  def observableSeqValue: ReadOnlyObjectProperty[Seq[A]]
 }
 
 final class RichObservableBuffer[A](val obs: ObservableBuffer[A]) extends AnyVal with RichObservableSeqLike[A] {
-  def observableSeqValue: ObservableValue[Seq[A], Seq[A]] = {
+  def observableSeqValue: ReadOnlyObjectProperty[Seq[A]] = {
     RichToObservable.toObservable(obs)
   }
 }
 
 final class RichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](val oaa: ObservableArray[A, B, C]) extends AnyVal with RichObservableSeqLike[A] {
-  def observableSeqValue: ObservableValue[Seq[A], Seq[A]] = {
+  def observableSeqValue: ReadOnlyObjectProperty[Seq[A]] = {
     RichToObservable.toObservable(oaa)
   }
 }
 
 final class RichObservableSet[A](val os: ObservableSet[A]) extends AnyVal {
-  def observableSetValue: ObservableValue[Set[A], Set[A]] = {
+  def observableSetValue: ReadOnlyObjectProperty[Set[A]] = {
     RichToObservable.toObservable(os)
   }
 }
