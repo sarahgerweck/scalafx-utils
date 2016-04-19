@@ -199,6 +199,15 @@ object Eclipse {
 
 object Dependencies {
   /* ********************************************************************** */
+  /*                                  Akka                                  */
+  /* ********************************************************************** */
+  final val akkaVersion = "2.4.4"
+
+  val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
+  val akkaAgent  = "com.typesafe.akka" %% "akka-agent"  % akkaVersion
+  val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion
+
+  /* ********************************************************************** */
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
   final val slf4jVersion       = "1.7.21"
@@ -317,6 +326,13 @@ object UtilsBuild extends Build {
         scalaFx,
         scalaz,
         shapeless
+      ),
+
+      /* Akka dependencies */
+      libraryDependencies ++= Seq (
+        akkaActor   % "optional",
+        akkaStream  % "optional",
+        akkaAgent   % "optional"
       ),
 
       unmanagedJars in Compile += Attributed.blank(file(System.getenv("JAVA_HOME") + "/jre/lib/ext/jfxrt.jar"))
