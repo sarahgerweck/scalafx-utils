@@ -1,6 +1,7 @@
 package org.gerweck.scalafx.util
 
 import scala.concurrent._
+import scala.util._
 
 import org.log4s._
 
@@ -27,13 +28,23 @@ object FutureObservable {
     * is already a built-in feature.
     */
   def apply[A](defaultValue: A)(future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[A] = {
-    val prop = ObjectProperty[A](defaultValue)
-    future onSuccess { case a =>
-      runLater {
-        logger.trace("Updating property value after Future's success")
-        prop.value = a
-      }
+    logger.debug(s"Got request to create new FutureObservable")
+    future.value match {
+      case Some(Success(a)) =>
+        ObjectProperty(a)
+
+      case Some(Failure(f)) =>
+        logger.info(s"Got failure from FutureObservable's result: $f")
+        ObjectProperty(defaultValue)
+
+      case None =>
+        val prop = ObjectProperty[A](defaultValue)
+        future onSuccess { case a =>
+          runLater {
+            prop.value = a
+          }
+        }
+        prop
     }
-    prop
   }
 }
