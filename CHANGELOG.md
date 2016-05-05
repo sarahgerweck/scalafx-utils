@@ -14,3 +14,12 @@ end users will be listed here.
 
    * Modified Scalaz instance to add `ReadOnlyObjectProperty` instances and
      improve specificity of the `ObservableValue[A, _]` instances.
+
+### 0.8.0
+
+   * Update ScalaFX to 8.0.92-R10.
+      * This makes Java 1.8.0_91 the minimum version.
+   * `FutureObservable` allows you to observe the results of a `Future`.
+   * New `AkkaFX` object gives bridges from Akka to ScalaFX
+      * `observableSink` creates a Akka Streams sink that allows you to
+        observe each value that comes through a stream.
