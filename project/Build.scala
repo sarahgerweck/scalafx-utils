@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-import com.typesafe.sbt.SbtSite.site
+import com.typesafe.sbt.site._
 import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.SbtPgp.autoImport._
 
@@ -82,30 +82,33 @@ object BuildSettings extends Basics {
     if (deprecation) Seq("-Xlint:deprecation") else Seq.empty
   )
 
-  /* Site setup */
-  lazy val siteSettings = site.settings ++ site.includeScaladoc()
+  /** A wrapper so we can call `commonSettings()` on a project. */
+  implicit class ProjectSettingsHelper(p: Project) {
+    def commonSettings() = siteSettings(p).settings(buildSettings: _*)
 
-  val buildSettings = buildMetadata ++
-                      siteSettings ++
-                      projectMainClass.toSeq.map(mainClass := Some(_)) ++
-                      Seq (
-    organization         :=  buildOrganization,
-    organizationName     :=  buildOrganizationName,
-    organizationHomepage :=  buildOrganizationUrl map { url _ },
+    private[this] def siteSettings(p: Project) = p.enablePlugins(SiteScaladocPlugin)
 
-    scalaVersion         :=  buildScalaVersion,
-    crossScalaVersions   :=  buildScalaVersions,
+    private[this] val buildSettings = buildMetadata ++
+                        projectMainClass.toSeq.map(mainClass := Some(_)) ++
+                        Seq (
+      organization         :=  buildOrganization,
+      organizationName     :=  buildOrganizationName,
+      organizationHomepage :=  buildOrganizationUrl map { url _ },
 
-    scalacOptions        ++= buildScalacOptions,
-    javacOptions         ++= buildJavacOptions,
-    autoAPIMappings      :=  true,
+      scalaVersion         :=  buildScalaVersion,
+      crossScalaVersions   :=  buildScalaVersions,
 
-    updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
-    parallelExecution    :=  parallelBuild,
+      scalacOptions        ++= buildScalacOptions,
+      javacOptions         ++= buildJavacOptions,
+      autoAPIMappings      :=  true,
 
-    evictionWarningOptions in update :=
-      EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
-  )
+      updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
+      parallelExecution    :=  parallelBuild,
+
+      evictionWarningOptions in update :=
+        EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
+    )
+  }
 }
 
 object Helpers {
@@ -308,7 +311,7 @@ object UtilsBuild extends Build {
   import Helpers._
 
   lazy val root = (project in file ("."))
-    .settings(buildSettings: _*)
+    .commonSettings()
     .settings(Eclipse.settings: _*)
     .settings(Publish.settings: _*)
     .settings(Release.settings: _*)
