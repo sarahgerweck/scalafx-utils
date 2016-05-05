@@ -223,7 +223,7 @@ object Dependencies {
   final val groovyVersion      = "2.4.4"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
-  final val gerweckUtilVersion = "1.6.0"
+  final val gerweckUtilVersion = "1.7.0"
   final val scalazVersion      = "7.2.2"
   final val shapelessVersion   = "2.3.0"
   final val scallopVersion     = "0.9.5"
@@ -281,7 +281,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                ScalaFX                                 */
   /* ********************************************************************** */
-  final val scalaFxVersion = "8.0.60-R9"
+  final val scalaFxVersion = "8.0.92-R10"
 
   val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
 
