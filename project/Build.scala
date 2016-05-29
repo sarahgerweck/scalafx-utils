@@ -204,7 +204,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                  Akka                                  */
   /* ********************************************************************** */
-  final val akkaVersion = "2.4.4"
+  final val akkaVersion = "2.4.6"
 
   val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
   val akkaAgent  = "com.typesafe.akka" %% "akka-agent"  % akkaVersion
@@ -216,24 +216,22 @@ object Dependencies {
   final val slf4jVersion       = "1.7.21"
   final val log4sVersion       = "1.3.0"
   final val logbackVersion     = "1.1.7"
-  final val threeTenVersion    = "1.3"
   final val commonsVfsVersion  = "2.0"
   final val commonsIoVersion   = "2.4"
-  final val spireVersion       = "0.9.1"
+  final val spireVersion       = "0.11.0"
   final val groovyVersion      = "2.4.4"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
-  final val gerweckUtilVersion = "1.7.0"
-  final val scalazVersion      = "7.2.2"
-  final val shapelessVersion   = "2.3.0"
-  final val scallopVersion     = "0.9.5"
+  final val gerweckUtilVersion = "1.7.1"
+  final val scalazVersion      = "7.2.3"
+  final val shapelessVersion   = "2.3.1"
+  final val scallopVersion     = "1.0.1"
 
   val log4s       = "org.log4s"           %% "log4s"               % log4sVersion
   val slf4j       = "org.slf4j"           %  "slf4j-api"           % slf4jVersion
   val jclBridge   = "org.slf4j"           %  "jcl-over-slf4j"      % slf4jVersion
   val log4jBridge = "org.slf4j"           %  "log4j-over-slf4j"    % slf4jVersion
   val logback     = "ch.qos.logback"      %  "logback-classic"     % logbackVersion
-  val threeTen    = "org.threeten"        %  "threetenbp"          % threeTenVersion
   val spire       = "org.spire-math"      %% "spire"               % spireVersion
   val commonsIo   = "commons-io"          %  "commons-io"          % commonsIoVersion
   val groovy      = "org.codehaus.groovy" %  "groovy-all"          % groovyVersion
