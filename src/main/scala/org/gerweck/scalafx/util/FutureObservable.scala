@@ -28,13 +28,12 @@ object FutureObservable {
     * is already a built-in feature.
     */
   def apply[A](defaultValue: A)(future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[A] = {
-    logger.debug(s"Got request to create new FutureObservable")
     future.value match {
       case Some(Success(a)) =>
         ObjectProperty(a)
 
       case Some(Failure(f)) =>
-        logger.info(s"Got failure from FutureObservable's result: $f")
+        logger.debug(s"Got failure from FutureObservable's result: $f")
         ObjectProperty(defaultValue)
 
       case None =>
