@@ -7,6 +7,7 @@ import scalafx.Includes._
 import scalafx.event.ActionEvent
 import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
+import scalafx.scene.Node
 import scalafx.scene.control._
 import scalafx.scene.layout._
 import scalafx.stage.Stage
@@ -71,17 +72,25 @@ class DialogButtons(stage: Stage, showOk: Boolean = true, showApply: Boolean = t
     }
   }
 
-  protected[this] def mainLayout = new VBox(Separators.horizontal, bar) {
+  protected[control] def mainLayout = new VBox(Separators.horizontal, bar) {
     hgrow = Priority.Always
   }
 
   delegate.asInstanceOf[DialogButtons.DialogButtonsJFXRegion].addChild(mainLayout)
 }
 
-private object DialogButtons {
-  class DialogButtonsJFXRegion extends JRegion {
+object DialogButtons {
+  private class DialogButtonsJFXRegion extends JRegion {
     protected[control] def addChild(n: JNode) = {
       getChildren.add(n)
     }
+  }
+
+  def withCallback(stage: Stage, showOk: Boolean = true, showApply: Boolean = true, showCancel: Boolean = true)(applyChanges: () => Unit): Node = {
+    val ac = applyChanges
+    val db = new DialogButtons(stage, showOk, showApply, showCancel) {
+      override def applyChanges() = ac()
+    }
+    db.mainLayout
   }
 }
