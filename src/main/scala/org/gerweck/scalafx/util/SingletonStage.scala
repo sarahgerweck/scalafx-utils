@@ -31,5 +31,10 @@ abstract class SingletonStage {
   protected trait ParentStage extends Stage {
     require(singletonStage.isEmpty, s"Cannot have two ${name} stages")
     logger.debug(s"Creating singleton ${name} stage")
+
+    override def close() = {
+      singletonStage = None
+      super.close()
+    }
   }
 }
