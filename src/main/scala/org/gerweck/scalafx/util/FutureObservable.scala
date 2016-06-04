@@ -46,4 +46,24 @@ object FutureObservable {
         prop
     }
   }
+
+  def ofSuccessOption[A](future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[Option[A]] = {
+    future.value match {
+      case Some(Success(a)) =>
+        ObjectProperty(Some(a))
+
+      case Some(Failure(f)) =>
+        logger.debug(s"Got failure from FutureObservable's result: $f")
+        ObjectProperty(None)
+
+      case None =>
+        val prop = ObjectProperty[Option[A]](None)
+        future onSuccess { case a =>
+          runLater {
+            prop.value = Some(a)
+          }
+        }
+        prop
+    }
+  }
 }
