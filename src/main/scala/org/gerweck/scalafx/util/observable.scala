@@ -156,6 +156,7 @@ trait ObservableImplicits {
   implicit def enrichObservableOfIterable[A, B](ooi: ObservableValue[B, B])(implicit ev1: B => Iterable[A]) = new ObservableOfIterable[A, B](ooi)
   implicit def enrichObservableOfMapLike[A, B, C](ooml: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) = new ObservableOfMapLike[A, B, C](ooml)
   implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
+  implicit def enrichObjectProperty[A](o: ObjectProperty[A]) = new RichObjectProperty(o)
   implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
 
   implicit def enrichObservableBuffer[A](ob: ObservableBuffer[A]) = new RichObservableBuffer(ob)
@@ -265,6 +266,12 @@ final class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
     }
     op
   }
+
+  def readOnly: ReadOnlyProperty[A, B] = inner
+}
+
+final class RichObjectProperty[A](val inner: ObjectProperty[A]) extends AnyVal {
+  def readOnly: ReadOnlyObjectProperty[A] = inner
 }
 
 sealed trait ToObservableOps[-A, +B] {
