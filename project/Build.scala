@@ -220,6 +220,7 @@ object Dependencies {
   final val commonsIoVersion   = "2.4"
   final val spireVersion       = "0.11.0"
   final val groovyVersion      = "2.4.4"
+  final val scalaJava8Version  = "0.7.0"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "2.0.0"
@@ -227,19 +228,20 @@ object Dependencies {
   final val shapelessVersion   = "2.3.1"
   final val scallopVersion     = "1.0.1"
 
-  val log4s           = "org.log4s"           %% "log4s"              % log4sVersion
-  val slf4j           = "org.slf4j"           %  "slf4j-api"          % slf4jVersion
-  val jclBridge       = "org.slf4j"           %  "jcl-over-slf4j"     % slf4jVersion
-  val log4jBridge     = "org.slf4j"           %  "log4j-over-slf4j"   % slf4jVersion
-  val logback         = "ch.qos.logback"      %  "logback-classic"    % logbackVersion
-  val spire           = "org.spire-math"      %% "spire"              % spireVersion
-  val commonsIo       = "commons-io"          %  "commons-io"         % commonsIoVersion
-  val groovy          = "org.codehaus.groovy" %  "groovy-all"         % groovyVersion
-  val gerweckUtil     = "org.gerweck.scala"   %% "gerweck-utils"      % gerweckUtilVersion
-  val gerweckUtilAkka = "org.gerweck.scala"   %% "gerweck-utils-akka" % gerweckUtilVersion
-  val scalaz          = "org.scalaz"          %% "scalaz-core"        % scalazVersion
-  val shapeless       = "com.chuusai"         %% "shapeless"          % shapelessVersion
-  val scallop         = "org.rogach"          %% "scallop"            % scallopVersion
+  val log4s           = "org.log4s"              %% "log4s"              % log4sVersion
+  val slf4j           = "org.slf4j"              %  "slf4j-api"          % slf4jVersion
+  val jclBridge       = "org.slf4j"              %  "jcl-over-slf4j"     % slf4jVersion
+  val log4jBridge     = "org.slf4j"              %  "log4j-over-slf4j"   % slf4jVersion
+  val logback         = "ch.qos.logback"         %  "logback-classic"    % logbackVersion
+  val spire           = "org.spire-math"         %% "spire"              % spireVersion
+  val commonsIo       = "commons-io"             %  "commons-io"         % commonsIoVersion
+  val groovy          = "org.codehaus.groovy"    %  "groovy-all"         % groovyVersion
+  val gerweckUtil     = "org.gerweck.scala"      %% "gerweck-utils"      % gerweckUtilVersion
+  val gerweckUtilAkka = "org.gerweck.scala"      %% "gerweck-utils-akka" % gerweckUtilVersion
+  val scalaJava8      = "org.scala-lang.modules" %% "scala-java8-compat" % scalaJava8Version
+  val scalaz          = "org.scalaz"             %% "scalaz-core"        % scalazVersion
+  val shapeless       = "com.chuusai"            %% "shapeless"          % shapelessVersion
+  val scallop         = "org.rogach"             %% "scallop"            % scallopVersion
 
   val commonsVfs = {
     val base      = "org.apache.commons"  %  "commons-vfs2"     % commonsVfsVersion
@@ -325,6 +327,7 @@ object UtilsBuild extends Build {
         log4jBridge % "runtime,optional",
         logback     % "runtime,optional",
         gerweckUtil,
+        scalaJava8,
         scalaFx,
         scalaz,
         shapeless

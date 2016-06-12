@@ -2,8 +2,14 @@ package org.gerweck.scalafx.util
 
 import language.implicitConversions
 
+import scala.compat.java8.FunctionConverters._
+
+import java.util.function.{ Predicate => JPredicate }
+
 import scalafx.beans.property._
+import scalafx.beans.value._
 import scalafx.collections._
+import scalafx.collections.transformation._
 
 sealed trait ToFlatObservable[-A, +B] extends Calculable[A, B]
 object ToFlatObservable extends CalculableObservable[ToFlatObservable[_, _]] {
@@ -39,6 +45,19 @@ sealed trait RichObservableSeqLike[A] extends Any {
 final class RichObservableBuffer[A](val obs: ObservableBuffer[A]) extends AnyVal with RichObservableSeqLike[A] {
   def observableSeqValue: ReadOnlyObjectProperty[Seq[A]] = ToFlatObservable.toObservable(obs)
   def observableSize = ObservableSized.toObservable(obs)
+
+  def observeFiltered(predicate: A => Boolean) = {
+    new transformation.FilteredBuffer(obs, predicate)
+  }
+  /* The dummy implicit is here to ensure the `observeFiltered` methods all have different post-erasure types */
+  def observeFiltered[B >: A](predicate: ObservableValue[JPredicate[B], JPredicate[B]])(implicit dummy: DummyImplicit): FilteredBuffer[A] = {
+    val fb = new transformation.FilteredBuffer(obs)
+    fb.predicate <== predicate
+    fb
+  }
+  def observeFiltered[B >: A](predicate: Observable[B => Boolean]): FilteredBuffer[A] = {
+    observeFiltered(predicate.map[JPredicate[A]](asJavaPredicate))
+  }
 }
 
 final class RichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](val oaa: ObservableArray[A, B, C]) extends AnyVal with RichObservableSeqLike[A] {
