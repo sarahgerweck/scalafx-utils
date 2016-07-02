@@ -204,7 +204,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                  Akka                                  */
   /* ********************************************************************** */
-  final val akkaVersion = "2.4.6"
+  final val akkaVersion = "2.4.7"
 
   val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
   val akkaAgent  = "com.typesafe.akka" %% "akka-agent"  % akkaVersion
@@ -224,7 +224,7 @@ object Dependencies {
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "2.0.0"
-  final val scalazVersion      = "7.2.3"
+  final val scalazVersion      = "7.2.4"
   final val shapelessVersion   = "2.3.1"
   final val scallopVersion     = "1.0.1"
 
