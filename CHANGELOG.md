@@ -23,3 +23,13 @@ end users will be listed here.
    * New `AkkaFX` object gives bridges from Akka to ScalaFX
       * `observableSink` creates a Akka Streams sink that allows you to
         observe each value that comes through a stream.
+
+### 0.9.0
+
+   * This release is not binary compatible with 0.8 or earlier.
+   * Add more controls for filtering items.
+
+#### 0.9.1
+
+   * Add control panel builders: simple utility code for building control
+     panels
