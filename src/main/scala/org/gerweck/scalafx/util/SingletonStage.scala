@@ -10,9 +10,9 @@ abstract class SingletonStage {
 
   type InstanceStage <: ParentStage
 
-  protected[this] var singletonStage: Option[InstanceStage] = None
+  protected[this] final var singletonStage: Option[InstanceStage] = None
 
-  def name = getClass.getSimpleName
+  protected[this] def singletonStageName = getClass.getSimpleName
 
   protected[this] def makeStage(): InstanceStage
 
@@ -28,9 +28,9 @@ abstract class SingletonStage {
     }
   }
 
-  protected trait ParentStage extends Stage {
-    require(singletonStage.isEmpty, s"Cannot have two ${name} stages")
-    logger.debug(s"Creating singleton ${name} stage")
+  protected[this] trait ParentStage extends Stage {
+    require(singletonStage.isEmpty, s"Cannot have two ${singletonStageName} stages")
+    logger.trace(s"Creating singleton ${singletonStageName} stage")
 
     override def close() = {
       singletonStage = None
