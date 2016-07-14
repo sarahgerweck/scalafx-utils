@@ -18,7 +18,7 @@ sealed trait Basics {
   final val buildScalaVersion     = "2.11.8"
   final val extraScalaVersions    = Seq.empty
   final val minimumJavaVersion    = "1.8"
-  lazy  val defaultOptimize       = true
+  lazy  val defaultOptimize       = false
   final val projectMainClass      = None
 
   lazy  val parallelBuild         = false
