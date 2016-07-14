@@ -33,3 +33,9 @@ end users will be listed here.
 
    * Add control panel builders: simple utility code for building control
      panels
+
+### 0.10.0
+
+   * Breaking changes to `SingletonStage` for better naming and visibility.
+   * New `layout` package with `Anchored` pane for resizable stages.
+   * New `StringConverters` with standard converter types.
