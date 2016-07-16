@@ -14,7 +14,7 @@ abstract class SingletonStage {
 
   protected[this] def singletonStageName = getClass.getSimpleName
 
-  protected[this] def makeStage(): InstanceStage
+  protected[this] def makeStage(): Stage with InstanceStage
 
   def showStage(): Unit = {
     singletonStage match {
