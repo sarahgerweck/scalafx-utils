@@ -27,7 +27,7 @@ object FutureObservable {
     * no equivalent mechanism for this mandatory functionality, but recovery
     * is already a built-in feature.
     */
-  def apply[A](defaultValue: A)(future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[A] = {
+  def withDefault[A](defaultValue: A)(future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[A] = {
     future.value match {
       case Some(Success(a)) =>
         ObjectProperty(a)
@@ -49,6 +49,9 @@ object FutureObservable {
         prop
     }
   }
+
+  @deprecated("Use withDefault. `Apply` will be either removed or repurposed in a future release.", "0.10.2")
+  def apply[A](defaultValue: A)(future: Future[A])(implicit ec: ExecutionContext) = withDefault(defaultValue)(future)
 
   /** Construct an observable that gives `None` until the `Future` completes successfully, after
     * which the `Option` contains the successful result.
