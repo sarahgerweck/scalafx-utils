@@ -33,37 +33,54 @@ object FutureObservable {
         ObjectProperty(a)
 
       case Some(Failure(f)) =>
-        logger.debug(s"Got failure from FutureObservable's result: $f")
+        logFailure(f)
         ObjectProperty(defaultValue)
 
       case None =>
         val prop = ObjectProperty[A](defaultValue)
-        future onSuccess { case a =>
-          runLater {
-            prop.value = a
-          }
+        future onComplete {
+          case Success(a) =>
+            runLater {
+              prop.value = a
+            }
+          case Failure(f) =>
+            logFailure(f)
         }
         prop
     }
   }
 
+  /** Construct an observable that gives `None` until the `Future` completes successfully, after
+    * which the `Option` contains the successful result.
+    *
+    * This method does not allow you to differentiate between a failure and a calculation
+    * that is still running. If you need to differentiate these, you can either use
+    * [[scala.concurrent.Future.recover]] or use [[ofTryOption]] instead.
+    */
   def ofSuccessOption[A](future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[Option[A]] = {
     future.value match {
       case Some(Success(a)) =>
         ObjectProperty(Some(a))
 
       case Some(Failure(f)) =>
-        logger.debug(s"Got failure from FutureObservable's result: $f")
+        logFailure(f)
         ObjectProperty(None)
 
       case None =>
         val prop = ObjectProperty[Option[A]](None)
-        future onSuccess { case a =>
-          runLater {
-            prop.value = Some(a)
-          }
+        future onComplete {
+          case Success(a) =>
+            runLater {
+              prop.value = Some(a)
+            }
+          case Failure(f) =>
+            logFailure(f)
         }
         prop
     }
+  }
+
+  private[this] def logFailure(f: Throwable): Unit = {
+    logger.debug(s"Got failure from FutureObservable's result: $f")
   }
 }
