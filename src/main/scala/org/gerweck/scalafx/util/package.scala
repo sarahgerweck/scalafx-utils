@@ -3,6 +3,7 @@ package org.gerweck.scalafx
 import language.implicitConversions
 import language.existentials
 
+import scalafx.Includes._
 import scalafx.beans.property._
 import scalafx.beans.value._
 import scalafx.event.subscriptions.Subscription
@@ -19,7 +20,7 @@ import scalaz._
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-package object util extends ObservableImplicits {
+package object util extends ObservableImplicits with LowPriorityImplicits {
   type Observable[A] = ObservableValue[A, _]
   type SimpleProperty[A] = Property[A, _]
 
