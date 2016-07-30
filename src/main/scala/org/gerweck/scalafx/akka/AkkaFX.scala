@@ -15,9 +15,9 @@ import scalafx.beans.value.ObservableValue
   *
   * @author Sarah Gerweck <sarah.a180@gmail.com>
   */
-object AkkaFX extends AkkaStreamFX
+object AkkaFX extends AkkaStreamFX with AkkaFXCollections
 
-trait AkkaStreamFX {
+trait AkkaStreamFX extends Any {
   /** A [[akka.stream.scaladsl.Sink]] that sends all values to a
     * [[scalafx.beans.property.Property]].
     *
