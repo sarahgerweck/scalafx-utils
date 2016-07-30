@@ -15,6 +15,30 @@ import scalafx.beans.property._
 object FutureObservable {
   private[this] val logger = getLogger
 
+  /** Construct an observable that gives the result of [[scala.concurrent.Future.value]] at all
+    * times.
+    *
+    * Like the underlying method, it gives `None` until the `Future` completes, after which it
+    * gives a `Some` of the `Try` that describes the calculation.
+    */
+  def ofTryOption[A](future: Future[A])(implicit ec: ExecutionContext): ReadOnlyObjectProperty[Option[Try[A]]] = {
+    val startValue = future.value
+    val prop = ObjectProperty(startValue)
+    if (startValue.isEmpty) {
+      future onComplete { result =>
+        runLater {
+          prop.value = Some(result)
+        }
+      }
+    }
+    prop
+  }
+
+  /* NOTE: All the other methods below ''could'' be derived from this one, but
+   * it's better to use as few JavaFX callbacks as possible since they have to
+   * be executed in the main UI thread.
+   */
+
   /** Construct an observable that gives the value of the future on success.
     *
     * Until the future completes successfully, the value will be that of
