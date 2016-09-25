@@ -4,7 +4,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                  Akka                                  */
   /* ********************************************************************** */
-  final val akkaVersion = "2.4.8"
+  final val akkaVersion = "2.4.10"
 
   val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
   val akkaAgent  = "com.typesafe.akka" %% "akka-agent"  % akkaVersion
@@ -24,8 +24,8 @@ object Dependencies {
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "2.2.3"
-  final val scalazVersion      = "7.2.4"
-  final val shapelessVersion   = "2.3.1"
+  final val scalazVersion      = "7.2.6"
+  final val shapelessVersion   = "2.3.2"
   final val scallopVersion     = "1.0.1"
 
   val log4s           = "org.log4s"              %% "log4s"              % log4sVersion
@@ -82,7 +82,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                ScalaFX                                 */
   /* ********************************************************************** */
-  final val scalaFxVersion = "8.0.92-R10"
+  final val scalaFxVersion = "8.0.102-R11"
 
   val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
 
