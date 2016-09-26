@@ -6,7 +6,8 @@ for working with JavaFX and ScalaFX in Scala.
 ScalaFX does a tremendous job at making JavaFX more usable from Scala, but
 it doesn't go as far as it could in facilitating functional and reactive
 programming. This project is an attempt to add additional facilities that
-further bridge the beautiful Scala with JavaFX.
+further bridge the beautiful paradigms of Scala with the powerful UI
+functionality offered JavaFX.
 
 In particular, here are some key features:
 
