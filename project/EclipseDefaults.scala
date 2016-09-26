@@ -1,10 +1,13 @@
 import sbt._
 
+import com.typesafe.sbteclipse.plugin.EclipsePlugin
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
-object Eclipse {
+object EclipseDefaults extends AutoPlugin {
+  override def requires = EclipsePlugin
+  override def trigger = allRequirements
 
-  val settings = Seq (
+  override lazy val buildSettings = Seq(
     EclipseKeys.createSrc            := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
     EclipseKeys.projectFlavor        := EclipseProjectFlavor.Scala,
     EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE18),

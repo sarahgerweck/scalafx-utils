@@ -4,7 +4,6 @@ import Resolvers._
 
 lazy val root = (project in file ("."))
   .enablePlugins(BasicSettings)
-  .settings(Eclipse.settings: _*)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
   .settings(resolvers += sonatypeRelease)
