@@ -41,5 +41,3 @@ object Publish {
     publishTo := Some(Resolver.file("phony-repo", file("target/repo")))
   )
 }
-
-
