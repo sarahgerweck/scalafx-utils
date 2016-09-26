@@ -1,7 +1,7 @@
 # Sarah’s ScalaFX Utilities #
 
 This project contains helper functions, utilities and convenience functions
-for working with JavaFX and ScalaFx in Scala.
+for working with JavaFX and ScalaFX in Scala.
 
 ScalaFX does a tremendous job at making JavaFX more usable from Scala, but
 it doesn't go as far as it could in facilitating functional and reactive
