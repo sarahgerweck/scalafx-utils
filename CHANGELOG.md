@@ -39,3 +39,9 @@ end users will be listed here.
    * Breaking changes to `SingletonStage` for better naming and visibility.
    * New `layout` package with `Anchored` pane for resizable stages.
    * New `StringConverters` with standard converter types.
+
+### 0.11.0
+
+   * Update to ScalaFX 8.0.102-R11.
+      * This makes Java 1.8.0_101 the official minimum version.
+   * Reorganize the build to meet SBT 1.0 guidelines.

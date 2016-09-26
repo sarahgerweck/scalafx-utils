@@ -11,23 +11,29 @@ sealed trait Basics {
   final val buildOrganization     = "org.gerweck.scalafx"
   final val buildOrganizationName = "Sarah Gerweck"
   final val buildOrganizationUrl  = Some("https://github.com/sarahgerweck")
+  final val githubOrganization    = "sarahgerweck"
+  final val githubProject         = "scalafx-utils"
+  final val projectDescription    = "ScalaFX Utilities"
+  final val projectStartYear      = 2015
 
   final val buildScalaVersion     = "2.11.8"
   final val extraScalaVersions    = Seq.empty
   final val minimumJavaVersion    = "1.8"
-  lazy  val defaultOptimize       = false
-  final val projectMainClass      = None
+  final val defaultOptimize       = false
 
-  lazy  val parallelBuild         = false
-  lazy  val cachedResolution      = true
+  final val parallelBuild         = false
+  final val cachedResolution      = true
+
+  final val defaultNewBackend     = false
 
   /* Metadata definitions */
+  lazy val githubPage = url(s"https://github.com/${githubOrganization}/${githubProject}")
   lazy val buildMetadata = Vector(
     licenses    := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    homepage    := Some(url("https://github.com/sarahgerweck/scalafx-utils")),
-    description := "ScalaFX Utilities",
-    startYear   := Some(2015),
-    scmInfo     := Some(ScmInfo(url("https://github.com/sarahgerweck/scalafx-utils"), "scm:git:git@github.com:sarahgerweck/scalafx-utils.git"))
+    homepage    := Some(githubPage),
+    description := projectDescription,
+    startYear   := Some(projectStartYear),
+    scmInfo     := Some(ScmInfo(githubPage, s"scm:git:git@github.com:${githubOrganization}/${githubProject}.git"))
   )
 
   lazy val developerInfo = {
@@ -48,7 +54,6 @@ object BasicSettings extends AutoPlugin with Basics {
 
   override lazy val projectSettings = (
     buildMetadata ++
-    projectMainClass.toSeq.map(mainClass := Some(_)) ++
     Seq (
       organization         :=  buildOrganization,
       organizationName     :=  buildOrganizationName,
@@ -78,8 +83,11 @@ object BasicSettings extends AutoPlugin with Basics {
   lazy val debugSuspend = boolFlag("DEBUGGER_SUSPEND") getOrElse true
   lazy val unusedWarn   = boolFlag("UNUSED_WARNINGS") getOrElse false
   lazy val importWarn   = boolFlag("IMPORT_WARNINGS") getOrElse false
+  lazy val java8Flag    = boolFlag("BUILD_JAVA_8") getOrElse false
+  lazy val newBackend   = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
 
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
+
   val buildScalacOptions = Seq (
     "-unchecked",
     "-feature",
@@ -94,6 +102,8 @@ object BasicSettings extends AutoPlugin with Basics {
     if (unusedWarn) Seq("-Ywarn-unused") else Seq.empty
   ) ++ (
     if (importWarn) Seq("-Ywarn-unused-import") else Seq.empty
+  ) ++ (
+    if (newBackend) Seq("-Ybackend:GenBCode", "-Yopt:l:classpath") else Seq.empty
   )
 
   /* Java build setup */
