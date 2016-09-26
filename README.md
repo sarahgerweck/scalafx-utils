@@ -25,7 +25,7 @@ will be happy to merge high-quality pull requests if you find a bug.
 
 To use ScalaFX, add the following to your SBT build:
 
-    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.9.1"
+    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.12.0"
 
 ## Usage ##
 
