@@ -8,10 +8,10 @@ object EclipseDefaults extends AutoPlugin {
   override def trigger = allRequirements
 
   override lazy val buildSettings = Seq(
-    EclipseKeys.createSrc            := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
-    EclipseKeys.projectFlavor        := EclipseProjectFlavor.Scala,
+    EclipseKeys.createSrc            := EclipseCreateSrc.Default,
+    EclipseKeys.projectFlavor        := EclipseProjectFlavor.ScalaIDE,
     EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE18),
     EclipseKeys.withSource           := true,
-    EclipseKeys.eclipseOutput        := Some("target/scala-2.11/classes")
+    EclipseKeys.withJavadoc          := true
   )
 }
