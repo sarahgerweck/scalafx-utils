@@ -45,3 +45,7 @@ end users will be listed here.
    * Update to ScalaFX 8.0.102-R11.
       * This makes Java 1.8.0_101 the official minimum version.
    * Reorganize the build to meet SBT 1.0 guidelines.
+
+#### 0.11.1
+
+   * Update to Akka 2.4.11.

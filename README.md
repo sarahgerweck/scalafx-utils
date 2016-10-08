@@ -26,7 +26,13 @@ will be happy to merge high-quality pull requests if you find a bug.
 
 To use ScalaFX, add the following to your SBT build:
 
-    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.12.0"
+    libraryDependencies += "org.gerweck.scala" %% "scalafx-utils" % "0.11.1"
+
+This requires Scala 2.11 at this time. As all the dependencies become
+available for Scala 2.12, I will add support for any release candidates or
+releases. Conversely, Scala 2.11 support will be maintained with new features
+as long as the dependencies remain available and no substantial forking is
+required.
 
 ## Usage ##
 
