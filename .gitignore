@@ -43,3 +43,4 @@ target
 # Intentionally ignored code
 *.scala.old
 /*.script
+/bin/
