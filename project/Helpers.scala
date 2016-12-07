@@ -20,41 +20,27 @@ object Helpers {
   }
 
   sealed trait SVer {
-    def requireJava8: Boolean
+    val supportsNewBackend: Boolean = false
+    val requireJava8: Boolean = true
+    val newOptimize: Boolean = false
   }
   object SVer {
     def apply(scalaVersion: String): SVer = {
       scalaVersion match {
-        case "2.10"      => SVer2_10
-        case "2.11"      => SVer2_11
-        case "2.12.0-M1" => SVer2_12M1
-        case "2.12.0-M2" => SVer2_12M2
-        case "2.12.0-M3" => SVer2_12M3
-        case "2.12.0-M4" => SVer2_12M4
-        case "2.12"      => SVer2_12
+        case "2.10"       => SVer2_10
+        case "2.11"       => SVer2_11
+        case "2.12"       => SVer2_12
       }
     }
   }
   case object SVer2_10 extends SVer {
-    def requireJava8 = false
+    override val requireJava8 = false
   }
   case object SVer2_11 extends SVer {
-    def requireJava8 = false
-  }
-  case object SVer2_12M1 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M2 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M3 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M4 extends SVer {
-    def requireJava8 = true
+    override val supportsNewBackend = true
+    override val requireJava8 = false
   }
   case object SVer2_12 extends SVer {
-    def requireJava8 = true
+    override val newOptimize = true
   }
 }
-

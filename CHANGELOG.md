@@ -49,3 +49,8 @@ end users will be listed here.
 #### 0.11.1
 
    * Update to Akka 2.4.11.
+
+#### 0.11.2
+
+   * Update to Akka 2.4.14.
+   * Add support for Scala 2.12

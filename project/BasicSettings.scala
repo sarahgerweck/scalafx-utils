@@ -62,8 +62,8 @@ object BasicSettings extends AutoPlugin with Basics {
       scalaVersion         :=  buildScalaVersion,
       crossScalaVersions   :=  buildScalaVersions,
 
-      scalacOptions        ++= buildScalacOptions,
-      javacOptions         ++= buildJavacOptions,
+      addScalacOptions(),
+      addJavacOptions(),
       autoAPIMappings      :=  true,
 
       updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
@@ -88,30 +88,62 @@ object BasicSettings extends AutoPlugin with Basics {
 
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
 
-  val buildScalacOptions = Seq (
-    "-unchecked",
-    "-feature",
-    "-target:jvm-" + minimumJavaVersion
-  ) ++ (
-    if (deprecation) Seq("-deprecation") else Seq.empty
-  ) ++ (
-    if (optimize) Seq("-optimize") else Seq.empty
-  ) ++ (
-    if (inlineWarn) Seq("-Yinline-warnings") else Seq.empty
-  ) ++ (
-    if (unusedWarn) Seq("-Ywarn-unused") else Seq.empty
-  ) ++ (
-    if (importWarn) Seq("-Ywarn-unused-import") else Seq.empty
-  ) ++ (
-    if (newBackend) Seq("-Ybackend:GenBCode", "-Yopt:l:classpath") else Seq.empty
-  )
+  def addScalacOptions(optim: Boolean = optimize) = Def.derive {
+    scalacOptions ++= {
+      val sv = SVer(scalaBinaryVersion.value)
+      var options = Seq.empty[String]
 
-  /* Java build setup */
-  val buildJavacOptions = Seq(
-    "-target", minimumJavaVersion,
-    "-source", minimumJavaVersion
-  ) ++ (
-    if (deprecation) Seq("-Xlint:deprecation") else Seq.empty
-  )
+      options :+= "-unchecked"
+      options :+= "-feature"
+      if (deprecation) {
+        options :+= "-deprecation"
+      }
+      if (inlineWarn) {
+        options :+= "-Yinline-warnings"
+      }
+      if (unusedWarn) {
+        options :+= "-Ywarn-unused"
+      }
+      if (importWarn) {
+        options :+= "-Ywarn-unused-import"
+      }
+      if (!sv.requireJava8) {
+        options :+= "-target:jvm-" + minimumJavaVersion
+      }
+      if (optim) {
+        if (sv.newOptimize || sv.supportsNewBackend && newBackend) {
+          options :+= "-opt:l:project"
+        } else if (!sv.requireJava8) {
+          options :+= "-optimize"
+        }
+      }
+      if (sv.supportsNewBackend && newBackend && !sv.requireJava8) {
+        options :+= "-Ybackend:GenBCode"
+      }
+
+      options
+    }
+  }
+
+  def addJavacOptions() = Def.derive {
+    javacOptions ++= {
+      val sv = SVer(scalaBinaryVersion.value)
+      var options = Seq.empty[String]
+
+      if (sv.requireJava8) {
+        options ++= Seq[String](
+          "-target", "1.8",
+          "-source", "1.8"
+        )
+      } else {
+        options ++= Seq[String](
+          "-target", minimumJavaVersion,
+          "-source", minimumJavaVersion
+        )
+      }
+
+      options
+    }
+  }
 }
 
