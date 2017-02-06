@@ -4,7 +4,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                  Akka                                  */
   /* ********************************************************************** */
-  final val akkaVersion = "2.4.14"
+  final val akkaVersion = "2.4.16"
 
   val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
   val akkaAgent  = "com.typesafe.akka" %% "akka-agent"  % akkaVersion
@@ -13,9 +13,9 @@ object Dependencies {
   /* ********************************************************************** */
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
-  final val slf4jVersion       = "1.7.21"
+  final val slf4jVersion       = "1.7.22"
   final val log4sVersion       = "1.3.4"
-  final val logbackVersion     = "1.1.7"
+  final val logbackVersion     = "1.1.10"
   final val commonsVfsVersion  = "2.0"
   final val commonsIoVersion   = "2.4"
   final val spireVersion       = "0.11.0"
