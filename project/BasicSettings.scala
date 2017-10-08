@@ -16,8 +16,8 @@ sealed trait Basics {
   final val projectDescription    = "ScalaFX Utilities"
   final val projectStartYear      = 2015
 
-  final val buildScalaVersion     = "2.11.8"
-  final val extraScalaVersions    = Seq("2.12.1")
+  final val buildScalaVersion     = "2.12.3"
+  final val extraScalaVersions    = Seq("2.11.11")
   final val minimumJavaVersion    = "1.8"
   final val defaultOptimize       = false
 
