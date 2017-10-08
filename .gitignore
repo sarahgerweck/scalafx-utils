@@ -1,46 +1,46 @@
-# ##########################################################################
-#                                 SBT files
-# ##########################################################################
-target
-/project/project
-/*/project/project
+# Custom ignores for this project
 
-# ##########################################################################
-#                               Eclipse files
-# ##########################################################################
-.classpath
-.project
+# Build outputs
+target
+bin
+
+# SBT build files
 .cache
-.cache-*
+.cache-main
+.cache-tests
+project/project
+
+# Eclipse files
+.project
+.classpath
 .settings
 .worksheet
 
-# ##########################################################################
-#                               IntelliJ files
-# ##########################################################################
+# Scala worksheets
+*.sc
+
+# IDEA files
 .idea*
 *.iml
 
-# ##########################################################################
-#                                 Vim files
-# ##########################################################################
+# Ensime files
+.ensime
+.ensime_cache
+/ensime.sbt
+
+# Vim files
+.sw[a-z]
 *.sw[a-z]
 
-# ##########################################################################
-#                                 Misc files
-# ##########################################################################
-
-# OS X directory data
+# macOS files
 .DS_Store
 
-# Log files
-*.log
-
-# Java compiled
+# Never-commit files
 *.jar
 *.class
 
-# Intentionally ignored code
-*.scala.old
+# Assorted log files
+/*.log
+/log
 /*.script
-/bin/
+typescript
