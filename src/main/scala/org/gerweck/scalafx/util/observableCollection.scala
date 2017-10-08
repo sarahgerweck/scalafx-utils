@@ -1,7 +1,5 @@
 package org.gerweck.scalafx.util
 
-import language.implicitConversions
-
 import scala.compat.java8.FunctionConverters._
 
 import java.util.function.{ Predicate => JPredicate }

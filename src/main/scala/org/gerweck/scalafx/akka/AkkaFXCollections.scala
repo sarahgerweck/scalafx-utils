@@ -15,8 +15,6 @@ import scalafx.application.Platform.runLater
 import scalafx.beans.Observable
 import scalafx.beans.property._
 
-import org.log4s._
-
 import org.gerweck.scalafx.util.FutureObservable
 
 trait AkkaFXCollections extends Any {
@@ -28,7 +26,6 @@ object AkkaFXCollections {
         (buffer: Observable with Growable[A] with Clearable,
          clearFirst: Boolean,
          groupingSize: Int = 50, groupingTimeout: FiniteDuration = 100.milliseconds)
-        (implicit ec: ExecutionContext)
       : Sink[A, Future[Done]] = {
     sealed trait PopulateAction
     case class InsertRows(data: Seq[A]) extends PopulateAction

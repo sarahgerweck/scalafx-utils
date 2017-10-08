@@ -1,6 +1,5 @@
 package org.gerweck.scalafx.akka
 
-import scala.collection.mutable
 import scala.concurrent._
 
 import akka.Done

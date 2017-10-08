@@ -172,29 +172,24 @@ final class RichTuple[A <: Product](val self: A) extends AnyVal {
    * Shapeless's `tuple` package, but it can't infer the exact output type,
    * which is far less useful.
    */
-  def observe
-      [L <: HList, Unwrapped <: HList, Tupled <: Product]
-      (implicit tohl: Generic.Aux[A, L],
-                lister: ToTraversable.Aux[L, List, Observable[_]],
-                uw: Mapper.Aux[ObservableUnwrapper.type, L, Unwrapped],
-                tplr: Tupler.Aux[Unwrapped, Tupled]): ObservableValue[Tupled, Tupled] = {
+  def observe[L <: HList, Unwrap <: HList, Tupled <: Product]
+             (implicit tohl: Generic.Aux[A, L],
+              lister: ToTraversable.Aux[L, List, Observable[_]],
+              uw: Mapper.Aux[ObservableUnwrapper.type, L, Unwrap],
+              tplr: Tupler.Aux[Unwrap, Tupled]): ObservableValue[Tupled, Tupled] = {
     val asHList: L = tohl.to(self)
     def calculate(): Tupled = uw(asHList).tupled
 
     val original = calculate()
     val prop = ObjectProperty[Tupled](original)
 
-    for {
-      component <- asHList.to[List]
-    } {
+    for (component <- asHList.to[List]) {
       component onChange {
         prop.value = calculate()
       }
     }
     prop
   }
-
-  //  def omap[B]
 }
 
 final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
@@ -247,9 +242,9 @@ final class ObservableOfMapLike[A, B, C](val self: ObservableValue[C, C])(implic
 }
 
 final class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
-  def biMap[B <: AnyRef](push: A => B, pull: B => A): ObjectProperty[B] = {
+  def biMap[A1 <: AnyRef](push: A => A1, pull: A1 => A): ObjectProperty[A1] = {
     val original = push(inner.value)
-    val op = ObjectProperty[B](original)
+    val op = ObjectProperty[A1](original)
     inner onChange {
       val oldVal = op.value
       val newVal = push(inner.value)

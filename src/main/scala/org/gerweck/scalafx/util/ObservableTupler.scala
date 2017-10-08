@@ -1,10 +1,5 @@
 package org.gerweck.scalafx.util
 
-import language.existentials
-
-import scalaz._
-import Scalaz._
-
 import shapeless._
 import shapeless.ops.hlist._
 import shapeless.ops.function._
@@ -19,18 +14,20 @@ import scalafx.beans.value.ObservableValue
 class ObservableTupler
     [HLObs <: HList, HLParams <: HList, TParams <: Product] private
     (hlist: HLObs)
-    (implicit unwrapper: Mapper.Aux[ObservableUnwrapper.type, HLObs, HLParams],
-              tupler: Tupler.Aux[HLParams, TParams],
-              lister: ToList[HLObs, Observable[_]]) {
+    (implicit
+     unwrapper: Mapper.Aux[ObservableUnwrapper.type, HLObs, HLParams],
+     tupler: Tupler.Aux[HLParams, TParams],
+     lister: ToList[HLObs, Observable[_]]) {
 
-  def |@|[O, P, Appended <: HList, Unwrapped <: HList, Tupled <: Product, ApList]
+  def |@|[O, P, Appended <: HList, Unwrap <: HList, Tupled <: Product, ApList]
          (f: ObservableValue[O, P])
-         (implicit prepend: Prepend.Aux[HLObs, ObservableValue[O, P]::HNil, Appended],
-                   uw: Mapper.Aux[ObservableUnwrapper.type, Appended, Unwrapped],
-                   tplr: Tupler.Aux[Unwrapped, Tupled],
-                   lst: ToList[Appended, Observable[_]]): ObservableTupler[Appended, Unwrapped, Tupled] = {
+         (implicit
+          prepend: Prepend.Aux[HLObs, ObservableValue[O, P]::HNil, Appended],
+          uw: Mapper.Aux[ObservableUnwrapper.type, Appended, Unwrap],
+          tplr: Tupler.Aux[Unwrap, Tupled],
+          lst: ToList[Appended, Observable[_]]): ObservableTupler[Appended, Unwrap, Tupled] = {
     val newHL: Appended = hlist :+ f
-    new ObservableTupler[Appended, Unwrapped, Tupled](newHL)
+    new ObservableTupler[Appended, Unwrap, Tupled](newHL)
   }
 
   def hlisted: ObservableValue[HLParams, HLParams] = {
@@ -64,7 +61,10 @@ class ObservableTupler
     prop
   }
 
-  def apply[Func, Result](f: Func)(implicit ffp: FnFromProduct.Aux[HLParams => Result, Func], ftp: FnToProduct.Aux[Func, HLParams => Result]): ObservableValue[Result, Result] = {
+  def apply[Func, Result]
+           (f: Func)
+           (implicit ftp: FnToProduct.Aux[Func, HLParams => Result])
+      : ObservableValue[Result, Result] = {
     hlisted map ftp(f)
   }
 }

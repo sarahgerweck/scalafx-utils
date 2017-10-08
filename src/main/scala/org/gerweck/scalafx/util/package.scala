@@ -1,18 +1,12 @@
 package org.gerweck.scalafx
 
-import language.implicitConversions
-import language.existentials
-
-import scalafx.Includes._
 import scalafx.beans.property._
 import scalafx.beans.value._
-import scalafx.event.subscriptions.Subscription
 import scalafx.scene.Node
 import scalafx.scene.control._
 import scalafx.scene.input._
 import scalafx.scene.layout.GridPane
 import scalafx.scene.text.Text
-import scalafx.util.StringConverter
 
 import scalaz._
 
@@ -25,8 +19,8 @@ package object util extends ObservableImplicits with LowPriorityImplicits {
   type SimpleProperty[A] = Property[A, _]
 
   object TextDisplay {
-    def apply(text: ObservableValue[String,String]) = {
-      val t = new scalafx.scene.text.Text
+    def apply(text: ObservableValue[String,String]): Text = {
+      val t = new Text
       t.text <== text
       t
     }
