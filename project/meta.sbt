@@ -1,3 +1,2 @@
 // Meta-settings for controlling the compilation of the build script
-
-scalacOptions += "-deprecation"
+scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
