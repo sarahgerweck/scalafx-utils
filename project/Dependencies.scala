@@ -24,7 +24,7 @@ object Dependencies {
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "2.5.1"
-  final val scalazVersion      = "7.2.15"
+  final val scalazVersion      = "7.2.16"
   final val shapelessVersion   = "2.3.2"
   final val scallopVersion     = "1.0.1"
 
