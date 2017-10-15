@@ -64,4 +64,6 @@ change.
 
 * Update to Akka 2.5
 * Migrate to SBT 1.0
+* Update to ScalaFX 8.0.144-R14
+  * This is tested against Java 8u144, though it may work with older versions.
 * Improvements to `SingletonStage`
