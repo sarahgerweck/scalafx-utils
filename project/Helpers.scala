@@ -1,9 +1,15 @@
+import sbt._
+import Keys._
+
 object Helpers {
   def getProp(name: String): Option[String] = sys.props.get(name) orElse sys.env.get(name)
   def parseBool(str: String): Boolean = Set("yes", "y", "true", "t", "1") contains str.trim.toLowerCase
   def boolFlag(name: String): Option[Boolean] = getProp(name) map { parseBool _ }
   def boolFlag(name: String, default: Boolean): Boolean = boolFlag(name) getOrElse default
   def opts(names: String*): Option[String] = names.view.map(getProp _).foldLeft(None: Option[String]) { _ orElse _ }
+
+  lazy val buildNumberOpt = sys.env.get("BUILD_NUMBER")
+  lazy val isJenkins      = buildNumberOpt.isDefined
 
   import scala.xml._
   def excludePomDeps(exclude: (String, String) => Boolean): Node => Node = { node: Node =>
@@ -19,28 +25,59 @@ object Helpers {
     transformer.transform(node)(0)
   }
 
+  final lazy val sver: Def.Initialize[SVer] = {
+    Def.map(scalaBinaryVersion)(SVer.apply)
+  }
+
+  final lazy val forceOldInlineSyntax: Def.Initialize[Boolean] = {
+    val pat = """(?x)^ 2\.12\.[0-2] (?:[^\d].*)? $""".r
+    Def.map(scalaVersion) {
+      case pat() => true
+      case _     => false
+    }
+  }
+
+  sealed trait Backend
+  case object NewBackend extends Backend
+  case object SupportsNewBackend extends Backend
+  case object OldBackend extends Backend
+
   sealed trait SVer {
-    val supportsNewBackend: Boolean = false
-    val requireJava8: Boolean = true
-    val newOptimize: Boolean = false
+    val backend: Backend
+    val requireJava8: Boolean
+
+    def supportsNewBackend = backend match {
+      case NewBackend         => true
+      case SupportsNewBackend => true
+      case OldBackend         => false
+    }
   }
   object SVer {
     def apply(scalaVersion: String): SVer = {
-      scalaVersion match {
-        case "2.10"       => SVer2_10
-        case "2.11"       => SVer2_11
-        case "2.12"       => SVer2_12
+      CrossVersion.partialVersion(scalaVersion) match {
+        case Some((2, 10))           => SVer2_10
+        case Some((2, 11))           => SVer2_11
+        case Some((2, 12))           => SVer2_12
+        case Some((2, n)) if n >= 13 => SVer2_13
+        case _ =>
+          throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
       }
     }
   }
   case object SVer2_10 extends SVer {
-    override val requireJava8 = false
+    override final val backend = OldBackend
+    override final val requireJava8 = false
   }
   case object SVer2_11 extends SVer {
-    override val supportsNewBackend = true
-    override val requireJava8 = false
+    override final val backend = SupportsNewBackend
+    override final val requireJava8 = false
   }
   case object SVer2_12 extends SVer {
-    override val newOptimize = true
+    override final val backend = NewBackend
+    override final val requireJava8 = true
+  }
+  case object SVer2_13 extends SVer {
+    override final val backend = NewBackend
+    override final val requireJava8 = true
   }
 }
