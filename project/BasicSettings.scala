@@ -1,68 +1,37 @@
+/* Note: This file is shared among many projects. Avoid putting project-specific things here. */
+
 import sbt._
-import Keys._
-
-import scala.util.Properties.envOrNone
-
-import com.typesafe.sbt.site._
+import sbt.Keys._
 
 import Helpers._
 
-sealed trait Basics {
-  final val buildOrganization     = "org.gerweck.scalafx"
-  final val buildOrganizationName = "Sarah Gerweck"
-  final val buildOrganizationUrl  = Some("https://github.com/sarahgerweck")
-  final val githubOrganization    = "sarahgerweck"
-  final val githubProject         = "scalafx-utils"
-  final val projectDescription    = "ScalaFX Utilities"
-  final val projectStartYear      = 2015
-  final val projectHomepage       = None
-
-  final val buildScalaVersion     = "2.12.3"
-  final val extraScalaVersions    = Seq("2.11.11")
-  final val minimumJavaVersion    = "1.8"
-  final val defaultOptimize       = true
-  final val defaultOptimizeGlobal = false
-  final val inlinePatterns        = Seq("!akka.**,!slick.**")
-  final val autoAddCompileOptions = true
-
-  final val parallelBuild         = true
-  final val cachedResolution      = true
-  final val sonatypeResolver      = true
-
-  final val defaultNewBackend     = false
-
-  /* Metadata definitions */
-  lazy val githubPage = url(s"https://github.com/${githubOrganization}/${githubProject}")
-  lazy val buildMetadata = Vector(
-    licenses    := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    homepage    := Some(projectHomepage.getOrElse(githubPage)),
-    description := projectDescription,
-    startYear   := Some(projectStartYear),
-    scmInfo     := Some(ScmInfo(githubPage, s"scm:git:git@github.com:${githubOrganization}/${githubProject}.git"))
-  )
-
-  lazy val developerInfo = {
-    <developers>
-      <developer>
-        <id>sarah</id>
-        <name>Sarah Gerweck</name>
-        <email>sarah.a180@gmail.com</email>
-        <url>https://github.com/sarahgerweck</url>
-        <timezone>America/Los_Angeles</timezone>
-      </developer>
-    </developers>
-  }
+object BasicSettings extends AutoPlugin with BasicSettings {
+  override def projectSettings = basicSettings
 }
 
-object BasicSettings extends AutoPlugin with Basics {
-  override def requires = SiteScaladocPlugin
+trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
+  /* Overridable flags */
+  lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
+  lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
+  lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
+  lazy val noFatalWarn    = boolFlag("NO_FATAL_WARNINGS") getOrElse false
+  lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
+  lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
+  lazy val debug          = boolFlag("DEBUGGER") getOrElse false
+  lazy val debugPort      = intFlag("DEBUGGER_PORT", 5050)
+  lazy val debugSuspend   = boolFlag("DEBUGGER_SUSPEND") getOrElse true
+  lazy val unusedWarn     = boolFlag("UNUSED_WARNINGS") getOrElse false
+  lazy val importWarn     = boolFlag("IMPORT_WARNINGS") getOrElse false
+  lazy val findbugsHtml   = boolFlag("FINDBUGS_HTML") getOrElse !isJenkins
+  lazy val newBackend     = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
+  lazy val noBuildDocs    = boolFlag("NO_SBT_DOCS").getOrElse(false) && !isJenkins
 
-  override lazy val projectSettings = (
+  lazy val basicSettings = new Def.SettingList(
     buildMetadata ++
     Seq (
       organization         :=  buildOrganization,
       organizationName     :=  buildOrganizationName,
-      organizationHomepage :=  buildOrganizationUrl map { url _ },
+      organizationHomepage :=  buildOrganizationUrl.orElse(if (githubOrgPageFallback) Some(githubOrgPage) else None),
 
       scalaVersion         :=  buildScalaVersion,
       crossScalaVersions   :=  buildScalaVersions,
@@ -74,6 +43,12 @@ object BasicSettings extends AutoPlugin with Basics {
 
       evictionWarningOptions in update :=
         EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
+    ) ++ (
+      if (noBuildDocs) {
+        Seq(sources in (Compile, doc) := Seq.empty)
+      } else {
+        Seq.empty
+      }
     ) ++ (
       if (autoAddCompileOptions) {
         addScalacOptions() ++ addJavacOptions()
@@ -89,21 +64,6 @@ object BasicSettings extends AutoPlugin with Basics {
       }
     )
   )
-
-  /* Overridable flags */
-  lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
-  lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
-  lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
-  lazy val noFatalWarn    = boolFlag("NO_FATAL_WARNINGS") getOrElse false
-  lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
-  lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
-  lazy val debug          = boolFlag("DEBUGGER") getOrElse false
-  lazy val debugPort      = envOrNone("DEBUGGER_PORT") map { _.toInt } getOrElse 5050
-  lazy val debugSuspend   = boolFlag("DEBUGGER_SUSPEND") getOrElse true
-  lazy val unusedWarn     = boolFlag("UNUSED_WARNINGS") getOrElse false
-  lazy val importWarn     = boolFlag("IMPORT_WARNINGS") getOrElse false
-  lazy val java8Flag      = boolFlag("BUILD_JAVA_8") getOrElse false
-  lazy val newBackend     = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
 
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
 
@@ -209,13 +169,5 @@ object BasicSettings extends AutoPlugin with Basics {
     }
   }
 
-  def basicSiteSettings = Def.derive {
-    scalacOptions in (Compile,doc) ++= Seq(
-      "-groups",
-      "-implicits",
-      "-diagrams",
-      "-sourcepath", (baseDirectory in ThisBuild).value.getAbsolutePath,
-      "-doc-source-url", s"https://github.com/${githubOrganization}/${githubProject}/blob/master€{FILE_PATH}.scala"
-    )
-  }
+  private[this] lazy val githubOrgPage = url(s"https://github.com/${githubOrganization}")
 }
