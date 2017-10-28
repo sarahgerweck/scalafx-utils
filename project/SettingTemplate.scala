@@ -14,7 +14,7 @@ trait SettingTemplate {
   val projectHomepage: Option[URL] = None
 
   val buildScalaVersion: String
-  val extraScalaVersions: Seq[String]
+  val extraScalaVersions: Seq[String] = Seq.empty
   val minimumJavaVersion: String = "1.8"
   val defaultOptimize: Boolean = true
   val defaultOptimizeGlobal: Boolean = false
