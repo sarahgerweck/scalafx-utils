@@ -43,7 +43,7 @@ object SettingTemplate {
 
     val githubOrgPageFallback: Boolean = true
     lazy val githubPage = url(s"https://github.com/${githubOrganization}/${githubProject}")
-    override def sourceLocation(branch: String) = Some(url(s"${githubPage.toExternalForm}/blob/branch"))
+    override def sourceLocation(branch: String) = Some(url(s"${githubPage.toExternalForm}/blob/$branch"))
 
     lazy val buildMetadata = Vector(
       licenses    := projectLicenses,
