@@ -3,7 +3,7 @@ import Helpers._
 import Resolvers._
 
 lazy val root = (project in file ("."))
-  .enablePlugins(BasicSettings)
+  .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
   .settings(resolvers += sonatypeRelease)
