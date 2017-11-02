@@ -29,7 +29,5 @@ lazy val root = (project in file ("."))
       akkaStream      % "optional",
       akkaAgent       % "optional",
       gerweckUtilAkka % "optional"
-    ),
-
-    unmanagedJars in Compile += Attributed.blank(file(System.getenv("JAVA_HOME") + "/jre/lib/ext/jfxrt.jar"))
+    )
   )
