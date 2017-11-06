@@ -68,3 +68,12 @@ change.
   * This is tested against Java 8u144, though it may work with older versions.
 * Improvements to `SingletonStage`
 * Update Scala to 2.12.4
+
+### 0.13
+
+* New `ObservablePref`
+  * This builds on the `Pref` in `scala-utils`, making it a bindable property.
+  * `Pref` and `ObservablePref` are the way I recommend to store things like
+    window sizes, column selections and other UI preferences.
+  * Use a database like [H2](http://www.h2database.com/) if you have
+    complicated application state that needs to persist.
