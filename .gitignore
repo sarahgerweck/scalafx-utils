@@ -22,6 +22,9 @@ bin
 .idea*
 *.iml
 
+# VS Code files
+.history
+
 # Ensime files
 .ensime
 .ensime_cache
