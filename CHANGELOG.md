@@ -77,3 +77,8 @@ change.
     window sizes, column selections and other UI preferences.
   * Use a database like [H2](http://www.h2database.com/) if you have
     complicated application state that needs to persist.
+
+#### 0.13.1
+
+* Update to SBT 1.1
+* Update Shapeless to 2.3.3
