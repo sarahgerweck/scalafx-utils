@@ -39,9 +39,9 @@ and instances, which are all brought into scope with this import:
 
     import org.gerweck.scalafx.util._
 
-If you use Scalaz, this makes ScalaFX observables instances of `Functor`,
-`Applicative` and `Monad`. It also provides some simple extension methods
-along these lines.
+If you use [Cats](https://typelevel.org/cats/), this makes ScalaFX observables
+instances of `Functor`, `Applicative` and `Monad`. It also provides some
+simple extension methods along these lines.
 
 ### Functional Transformations ###
 
@@ -72,7 +72,7 @@ identical as defined by `equals`.
 #### Multiple Function Inputs ####
 
 If your function depends on several observable values, you can use the
-applicative behavior provided by the library. The Scalaz applicative
+applicative behavior provided by the library. The Cats applicative
 functionality is all available, but there is a more convenient mechanism for
 the most common use case where you want to operate on a tuple.
 
