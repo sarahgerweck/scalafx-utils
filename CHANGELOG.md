@@ -83,3 +83,4 @@ change.
 * Update to SBT 1.1
 * Update Shapeless to 2.3.3
 * Update Scalaz to 7.2.18
+* Update Gerweck Utils to 2.7.2
