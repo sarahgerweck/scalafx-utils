@@ -84,3 +84,9 @@ change.
 * Update Shapeless to 2.3.3
 * Update Scalaz to 7.2.18
 * Update Gerweck Utils to 2.7.2
+
+### 0.14
+
+* Migration from Scalaz to Cats
+  * This is the library we use to provide `Monad` and `Applicative` instances
+    for observable values.

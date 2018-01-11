@@ -19,7 +19,7 @@ lazy val root = (project in file ("."))
       gerweckUtil,
       scalaJava8,
       scalaFx,
-      scalaz,
+      cats,
       shapeless
     ),
 

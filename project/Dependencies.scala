@@ -24,7 +24,7 @@ object Dependencies {
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "2.7.2"
-  final val scalazVersion      = "7.2.18"
+  final val catsVersion        = "1.0.1"
   final val shapelessVersion   = "2.3.3"
   final val scallopVersion     = "1.0.1"
 
@@ -39,7 +39,7 @@ object Dependencies {
   val gerweckUtil     = "org.gerweck.scala"      %% "gerweck-utils"      % gerweckUtilVersion
   val gerweckUtilAkka = "org.gerweck.scala"      %% "gerweck-utils-akka" % gerweckUtilVersion
   val scalaJava8      = "org.scala-lang.modules" %% "scala-java8-compat" % scalaJava8Version
-  val scalaz          = "org.scalaz"             %% "scalaz-core"        % scalazVersion
+  val cats            = "org.typelevel"          %% "cats-core"          % catsVersion
   val shapeless       = "com.chuusai"            %% "shapeless"          % shapelessVersion
   val scallop         = "org.rogach"             %% "scallop"            % scallopVersion
 

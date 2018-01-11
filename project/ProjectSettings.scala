@@ -15,6 +15,7 @@ trait ProjectSettings
   override final val extraScalaVersions    = Seq("2.11.11")
   override final val defaultOptimize       = true
   override final val defaultOptimizeGlobal = false
+  override final val extraScalacOptions    = Seq("-Ypartial-unification")
 
   override final val sonatypeResolver      = true
 

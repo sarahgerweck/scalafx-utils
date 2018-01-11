@@ -8,8 +8,6 @@ import scalafx.scene.input._
 import scalafx.scene.layout.GridPane
 import scalafx.scene.text.Text
 
-import scalaz._
-
 /** Various implicits and global utilities for ScalaFX work.
   *
   * @author Sarah Gerweck <sarah@atscale.com>

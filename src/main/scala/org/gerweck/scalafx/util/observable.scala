@@ -2,7 +2,7 @@ package org.gerweck.scalafx.util
 
 import language.implicitConversions
 
-import scalaz._
+import cats._
 
 import scalafx.beans.property._
 import scalafx.beans.value._
@@ -16,7 +16,7 @@ trait ObservableImplicits {
    * a property in a tight loop, I expect you'll have bigger performance
    * issues.)
    */
-  implicit val observableInstances = new Applicative[Observable] with Functor[Observable] with Monad[Observable] {
+  implicit object observableInstances extends Applicative[Observable] with Functor[Observable] with Monad[Observable] {
     /* Map can be derived from `ap`, but this adds less overhead. */
     override def map[A, B](a: Observable[A])(f: A => B): ReadOnlyObjectProperty[B] = {
       @inline def recalculate(): B = f(a.value)
@@ -38,12 +38,12 @@ trait ObservableImplicits {
       prop
     }
 
-    def point[A](a: => A): ReadOnlyObjectProperty[A] = {
+    override def pure[A](a: A): ReadOnlyObjectProperty[A] = {
       ObjectProperty[A](a)
     }
 
     /* Ap can be derived from `point` and `bind`, but this has less overhead. */
-    override def ap[A, B](fa: => Observable[A])(f: => Observable[A => B]): ReadOnlyObjectProperty[B] = {
+    override def ap[A, B](f: Observable[A => B])(fa: Observable[A]): ReadOnlyObjectProperty[B] = {
       @inline def recalculate(): B = (f.value)(fa.value)
 
       val originalValue = recalculate()
@@ -66,13 +66,18 @@ trait ObservableImplicits {
       prop
     }
 
-    /* Aka `flatMap` */
-    override def bind[A, B](fa: Observable[A])(f: A => Observable[B]): ReadOnlyObjectProperty[B] = {
-      join(map(fa)(f))
+    override def flatMap[A, B](fa: Observable[A])(f: A => Observable[B]): ReadOnlyObjectProperty[B] = {
+      flatten(map(fa)(f))
     }
 
-    /* Aka `flatten` */
-    override def join[A](ooa: Observable[Observable[A]]): ReadOnlyObjectProperty[A] = {
+    override def tailRecM[A, B](a: A)(f: A => Observable[Either[A, B]]): Observable[B] = {
+      this.flatMap(f(a)) {
+        case Right(b)    => pure(b)
+        case Left(nextA) => tailRecM(nextA)(f)
+      }
+    }
+
+    override def flatten[A](ooa: Observable[Observable[A]]): ReadOnlyObjectProperty[A] = {
       @inline def oa() = ooa.value
       @inline def calc(): A = oa().value
 
@@ -109,12 +114,18 @@ trait ObservableImplicits {
     }
   }
 
-  implicit val readOnlyObjectPropertyInstances = new Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
+  implicit object readOnlyObjectPropertyInstances extends Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
     override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = observableInstances.map(a)(f)
-    override def point[A](a: => A): ReadOnlyObjectProperty[A] = observableInstances.point(a)
-    override def ap[A, B](fa: => ReadOnlyObjectProperty[A])(f: => ReadOnlyObjectProperty[A => B]): ReadOnlyObjectProperty[B] = observableInstances.ap(fa)(f)
-    override def bind[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = observableInstances.bind(fa)(f)
-    override def join[A](ooa: ReadOnlyObjectProperty[ReadOnlyObjectProperty[A]]): ReadOnlyObjectProperty[A] = {
+    override def pure[A](a: A): ReadOnlyObjectProperty[A] = observableInstances.pure(a)
+    override def ap[A, B](f: ReadOnlyObjectProperty[A => B])(fa: ReadOnlyObjectProperty[A]): ReadOnlyObjectProperty[B] = observableInstances.ap(f)(fa)
+    override def flatMap[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = observableInstances.flatMap(fa)(f)
+    override def tailRecM[A, B](a: A)(f: A => ReadOnlyObjectProperty[Either[A, B]]): ReadOnlyObjectProperty[B] = {
+      flatMap(f(a)) {
+        case Right(b)    => pure(b)
+        case Left(nextA) => tailRecM(nextA)(f)
+      }
+    }
+    override def flatten[A](ooa: ReadOnlyObjectProperty[ReadOnlyObjectProperty[A]]): ReadOnlyObjectProperty[A] = {
       /* NOTE: this is copy-pasted from `observableInstances`. TBD: Find a way to share this. */
       @inline def oa() = ooa.value
       @inline def calc(): A = oa().value
@@ -197,11 +208,11 @@ final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal
   @inline private def oapp = observableInstances
 
   def map[B](f: A => B) = oapp.map(self)(f)
-  def flatMap[B](f: A => Observable[B]) = oapp.bind(self)(f)
-  def <*>[B](f: Observable[A => B]): ObservableValue[B, B] = oapp.ap(self)(f)
+  def flatMap[B](f: A => Observable[B]) = oapp.flatMap(self)(f)
+  def <*>[B](f: Observable[A => B]): ObservableValue[B, B] = oapp.ap(f)(self)
   def tuple[B](f: Observable[B]): Observable[(A,B)] = oapp.tuple2(self, f)
-  final def *>[B](fb: ObjObs[B]): Observable[B] = oapp.apply2(self,fb)((_,b) => b)
-  final def <*[B](fb: ObjObs[B]): Observable[A] = oapp.apply2(self,fb)((a,_) => a)
+  final def *>[B](fb: ObjObs[B]): Observable[B] = oapp.map2(self,fb)((_,b) => b)
+  final def <*[B](fb: ObjObs[B]): Observable[A] = oapp.map2(self,fb)((a,_) => a)
 
   final def |@|[B, B1](fb: ObservableValue[B, B1]) = ObservableTupler(self, fb)
 
