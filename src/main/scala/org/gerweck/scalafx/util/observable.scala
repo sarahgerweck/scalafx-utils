@@ -16,7 +16,23 @@ trait ObservableImplicits {
    * a property in a tight loop, I expect you'll have bigger performance
    * issues.)
    */
-  implicit object observableInstances extends Applicative[Observable] with Functor[Observable] with Monad[Observable] {
+  implicit val observableInstances: Applicative[Observable] with Functor[Observable] with Monad[Observable] = ObservableImplicits.ObservableInstances
+  implicit val readOnlyObjectPropertyInstances: Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] = ObservableImplicits.ReadOnlyObjectPropertyInstances
+
+  implicit def enrichObservable[A, B](o: ObservableValue[A, B]) = new RichObservable(o)
+  implicit def enrichObservableOfIterable[A, B](ooi: ObservableValue[B, B])(implicit ev1: B => Iterable[A]) = new ObservableOfIterable[A, B](ooi)
+  implicit def enrichObservableOfMapLike[A, B, C](ooml: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) = new ObservableOfMapLike[A, B, C](ooml)
+  implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
+  implicit def enrichObjectProperty[A](o: ObjectProperty[A]) = new RichObjectProperty(o)
+  implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
+
+  implicit def enrichObservableBuffer[A](ob: ObservableBuffer[A]) = new RichObservableBuffer(ob)
+  implicit def enrichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](oa: ObservableArray[A, B, C]) = new RichObservableArray(oa)
+  implicit def enrichObservableSet[A](os: ObservableSet[A]) = new RichObservableSet(os)
+}
+
+private object ObservableImplicits {
+  object ObservableInstances extends Applicative[Observable] with Functor[Observable] with Monad[Observable] {
     /* Map can be derived from `ap`, but this adds less overhead. */
     override def map[A, B](a: Observable[A])(f: A => B): ReadOnlyObjectProperty[B] = {
       @inline def recalculate(): B = f(a.value)
@@ -114,11 +130,11 @@ trait ObservableImplicits {
     }
   }
 
-  implicit object readOnlyObjectPropertyInstances extends Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
-    override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = observableInstances.map(a)(f)
-    override def pure[A](a: A): ReadOnlyObjectProperty[A] = observableInstances.pure(a)
-    override def ap[A, B](f: ReadOnlyObjectProperty[A => B])(fa: ReadOnlyObjectProperty[A]): ReadOnlyObjectProperty[B] = observableInstances.ap(f)(fa)
-    override def flatMap[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = observableInstances.flatMap(fa)(f)
+  object ReadOnlyObjectPropertyInstances extends Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
+    override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = ObservableInstances.map(a)(f)
+    override def pure[A](a: A): ReadOnlyObjectProperty[A] = ObservableInstances.pure(a)
+    override def ap[A, B](f: ReadOnlyObjectProperty[A => B])(fa: ReadOnlyObjectProperty[A]): ReadOnlyObjectProperty[B] = ObservableInstances.ap(f)(fa)
+    override def flatMap[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = ObservableInstances.flatMap(fa)(f)
     override def tailRecM[A, B](a: A)(f: A => ReadOnlyObjectProperty[Either[A, B]]): ReadOnlyObjectProperty[B] = {
       flatMap(f(a)) {
         case Right(b)    => pure(b)
@@ -162,17 +178,6 @@ trait ObservableImplicits {
       prop
     }
   }
-
-  implicit def enrichObservable[A, B](o: ObservableValue[A, B]) = new RichObservable(o)
-  implicit def enrichObservableOfIterable[A, B](ooi: ObservableValue[B, B])(implicit ev1: B => Iterable[A]) = new ObservableOfIterable[A, B](ooi)
-  implicit def enrichObservableOfMapLike[A, B, C](ooml: ObservableValue[C, C])(implicit ev1: C => Iterable[(A, B)]) = new ObservableOfMapLike[A, B, C](ooml)
-  implicit def enrichProperty[A, B](o: Property[A, B]) = new RichProperty(o)
-  implicit def enrichObjectProperty[A](o: ObjectProperty[A]) = new RichObjectProperty(o)
-  implicit def enrichTuple[A <: Product](a: A) = new RichTuple(a)
-
-  implicit def enrichObservableBuffer[A](ob: ObservableBuffer[A]) = new RichObservableBuffer(ob)
-  implicit def enrichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](oa: ObservableArray[A, B, C]) = new RichObservableArray(oa)
-  implicit def enrichObservableSet[A](os: ObservableSet[A]) = new RichObservableSet(os)
 }
 
 final class RichTuple[A <: Product](val self: A) extends AnyVal {
@@ -204,8 +209,8 @@ final class RichTuple[A <: Product](val self: A) extends AnyVal {
 }
 
 final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
-  private type ObjObs[X] = ObservableValue[X, X]
-  @inline private def oapp = observableInstances
+  private[this] type ObjObs[X] = ObservableValue[X, X]
+  @inline private[this] def oapp = ObservableImplicits.ObservableInstances
 
   def map[B](f: A => B) = oapp.map(self)(f)
   def flatMap[B](f: A => Observable[B]) = oapp.flatMap(self)(f)
