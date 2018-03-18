@@ -90,3 +90,13 @@ change.
 * Migration from Scalaz to Cats
   * This is the library we use to provide `Monad` and `Applicative` instances
     for observable values.
+
+#### 0.14.1
+
+* Numerous updates not affecting binary compatibility
+  * Update to SBT 1.1.1
+  * Update Gerweck Utils to 3.0.1
+  * Update Log4s to 1.6.0
+  * Update Cats to 1.1.0
+  * Update Scala 2.11 to 2.11.12
+
