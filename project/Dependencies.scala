@@ -14,17 +14,17 @@ object Dependencies {
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
   final val slf4jVersion       = "1.7.25"
-  final val log4sVersion       = "1.4.0"
+  final val log4sVersion       = "1.6.0"
   final val logbackVersion     = "1.2.3"
   final val commonsVfsVersion  = "2.2"
   final val commonsIoVersion   = "2.4"
   final val spireVersion       = "0.13.0"
-  final val groovyVersion      = "2.4.6"
+  final val groovyVersion      = "2.4.13"
   final val scalaJava8Version  = "0.8.0"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
-  final val gerweckUtilVersion = "2.7.2"
-  final val catsVersion        = "1.0.1"
+  final val gerweckUtilVersion = "3.0.1"
+  final val catsVersion        = "1.1.0"
   final val shapelessVersion   = "2.3.3"
   final val scallopVersion     = "1.0.1"
 
