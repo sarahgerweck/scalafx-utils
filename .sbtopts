@@ -1,0 +1,4 @@
+-J-Xmx4G
+-J-XX:MaxMetaspaceSize=4g
+-J-XX:+UnlockCommercialFeatures
+-J-XX:+FlightRecorder
