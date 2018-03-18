@@ -32,14 +32,14 @@ trait ObservableImplicits {
 }
 
 private object ObservableImplicits {
-  object ObservableInstances extends Applicative[Observable] with Functor[Observable] with Monad[Observable] {
+  object ObservableTaggedOps {
     /* Map can be derived from `ap`, but this adds less overhead. */
-    override def map[A, B](a: Observable[A])(f: A => B): ReadOnlyObjectProperty[B] = {
+    def map[A, B](a: Observable[A])(f: A => B)(implicit ot: ObservableTag[B]): ot.ROPropType = {
       @inline def recalculate(): B = f(a.value)
 
       val originalValue = recalculate()
 
-      val prop = ObjectProperty[B](originalValue)
+      val prop = ot.property(originalValue)
 
       var prevValue = originalValue
       def changeHandler = prop.synchronized {
@@ -54,17 +54,17 @@ private object ObservableImplicits {
       prop
     }
 
-    override def pure[A](a: A): ReadOnlyObjectProperty[A] = {
-      ObjectProperty[A](a)
+    def pure[A](a: A)(implicit ot: ObservableTag[A]): ot.ROPropType = {
+      ot.property(a)
     }
 
     /* Ap can be derived from `point` and `bind`, but this has less overhead. */
-    override def ap[A, B](f: Observable[A => B])(fa: Observable[A]): ReadOnlyObjectProperty[B] = {
+    def ap[A, B](f: Observable[A => B])(fa: Observable[A])(implicit ot: ObservableTag[B]): ot.ROPropType = {
       @inline def recalculate(): B = (f.value)(fa.value)
 
       val originalValue = recalculate()
 
-      val prop = ObjectProperty[B](originalValue)
+      val prop = ot.property(originalValue)
 
       var prevValue = originalValue
 
@@ -82,24 +82,24 @@ private object ObservableImplicits {
       prop
     }
 
-    override def flatMap[A, B](fa: Observable[A])(f: A => Observable[B]): ReadOnlyObjectProperty[B] = {
+    def flatMap[A, B](fa: Observable[A])(f: A => Observable[B])(implicit ot: ObservableTag[B]): ot.ROPropType = {
       flatten(map(fa)(f))
     }
 
-    override def tailRecM[A, B](a: A)(f: A => Observable[Either[A, B]]): Observable[B] = {
+    def tailRecM[A, B](a: A)(f: A => Observable[Either[A, B]])(implicit ot: ObservableTag[B]): ot.ROPropType = {
       this.flatMap(f(a)) {
-        case Right(b)    => pure(b)
-        case Left(nextA) => tailRecM(nextA)(f)
+        case Right(b)    => pure(b)(ot)
+        case Left(nextA) => tailRecM(nextA)(f)(ot)
       }
     }
 
-    override def flatten[A](ooa: Observable[Observable[A]]): ReadOnlyObjectProperty[A] = {
+    def flatten[A](ooa: Observable[_ <: Observable[A]])(implicit ot: ObservableTag[A]): ot.ROPropType = {
       @inline def oa() = ooa.value
       @inline def calc(): A = oa().value
 
       val originalValue = calc()
 
-      val prop = ObjectProperty[A](originalValue)
+      val prop = ot.property(originalValue)
 
       var prevValue = originalValue
 
@@ -129,54 +129,22 @@ private object ObservableImplicits {
       prop
     }
   }
+  object ObservableInstances extends Applicative[Observable] with Functor[Observable] with Monad[Observable] {
+    override def map[A, B](a: Observable[A])(f: A => B) = ObservableTaggedOps.map(a)(f)
+    override def pure[A](a: A) = ObservableTaggedOps.pure(a)
+    override def ap[A, B](f: Observable[A => B])(fa: Observable[A]) = ObservableTaggedOps.ap(f)(fa)
+    override def flatMap[A, B](fa: Observable[A])(f: A => Observable[B]) = ObservableTaggedOps.flatMap(fa)(f)
+    override def tailRecM[A, B](a: A)(f: A => Observable[Either[A, B]]) = ObservableTaggedOps.tailRecM(a)(f)
+    override def flatten[A](ooa: Observable[Observable[A]]) = ObservableTaggedOps.flatten(ooa)
+  }
 
   object ReadOnlyObjectPropertyInstances extends Applicative[ReadOnlyObjectProperty] with Functor[ReadOnlyObjectProperty] with Monad[ReadOnlyObjectProperty] {
-    override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = ObservableInstances.map(a)(f)
-    override def pure[A](a: A): ReadOnlyObjectProperty[A] = ObservableInstances.pure(a)
-    override def ap[A, B](f: ReadOnlyObjectProperty[A => B])(fa: ReadOnlyObjectProperty[A]): ReadOnlyObjectProperty[B] = ObservableInstances.ap(f)(fa)
-    override def flatMap[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = ObservableInstances.flatMap(fa)(f)
-    override def tailRecM[A, B](a: A)(f: A => ReadOnlyObjectProperty[Either[A, B]]): ReadOnlyObjectProperty[B] = {
-      flatMap(f(a)) {
-        case Right(b)    => pure(b)
-        case Left(nextA) => tailRecM(nextA)(f)
-      }
-    }
-    override def flatten[A](ooa: ReadOnlyObjectProperty[ReadOnlyObjectProperty[A]]): ReadOnlyObjectProperty[A] = {
-      /* NOTE: this is copy-pasted from `observableInstances`. TBD: Find a way to share this. */
-      @inline def oa() = ooa.value
-      @inline def calc(): A = oa().value
-
-      val originalValue = calc()
-
-      val prop = ObjectProperty[A](originalValue)
-
-      var prevValue = originalValue
-
-      def innerHandle() = prop.synchronized {
-        val newVal = calc()
-        if (prevValue != newVal) {
-          prop.value = newVal
-          prevValue = newVal
-        }
-      }
-      var innerSub = oa() onChange innerHandle
-
-      var prevOuter = oa()
-      def outerHandle() = prop.synchronized {
-        val newOuter = oa()
-        /* We need reference equality here: we're subscribing to a specific object. */
-        if (prevOuter ne newOuter) {
-          innerSub.cancel()
-          innerSub = newOuter onChange innerHandle
-          prevOuter = newOuter
-          innerHandle()
-        }
-      }
-
-      ooa onChange outerHandle
-
-      prop
-    }
+    override def map[A, B](a: ReadOnlyObjectProperty[A])(f: A => B): ReadOnlyObjectProperty[B] = ObservableTaggedOps.map(a)(f)
+    override def pure[A](a: A): ReadOnlyObjectProperty[A] = ObservableTaggedOps.pure(a)
+    override def ap[A, B](f: ReadOnlyObjectProperty[A => B])(fa: ReadOnlyObjectProperty[A]): ReadOnlyObjectProperty[B] = ObservableTaggedOps.ap(f)(fa)
+    override def flatMap[A, B](fa: ReadOnlyObjectProperty[A])(f: A => ReadOnlyObjectProperty[B]): ReadOnlyObjectProperty[B] = ObservableTaggedOps.flatMap(fa)(f)
+    override def tailRecM[A, B](a: A)(f: A => ReadOnlyObjectProperty[Either[A, B]]): ReadOnlyObjectProperty[B] = ObservableTaggedOps.tailRecM(a)(f)
+    override def flatten[A](ooa: ReadOnlyObjectProperty[ReadOnlyObjectProperty[A]]): ReadOnlyObjectProperty[A] = ObservableTaggedOps.flatten(ooa)
   }
 }
 
@@ -209,15 +177,18 @@ final class RichTuple[A <: Product](val self: A) extends AnyVal {
 }
 
 final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal {
-  private[this] type ObjObs[X] = ObservableValue[X, X]
+  import ObservableImplicits.{ ObservableTaggedOps => ota }
   @inline private[this] def oapp = ObservableImplicits.ObservableInstances
 
-  def map[B](f: A => B) = oapp.map(self)(f)
-  def flatMap[B](f: A => Observable[B]) = oapp.flatMap(self)(f)
-  def <*>[B](f: Observable[A => B]): ObservableValue[B, B] = oapp.ap(f)(self)
+  def map[B: ObservableTag](f: A => B) = ota.map(self)(f)
+  def flatMap[B: ObservableTag](f: A => Observable[B]) = ota.flatMap(self)(f)
+  def flatten[B](implicit ev1: A <:< Observable[B], ot: ObservableTag[B]) = ota.flatten(self.asInstanceOf[Observable[Observable[B]]])
+  /* A second case where `A` is convertible to an Observable[B] */
+  def flatten[B](implicit ev1: A => Observable[B], ot: ObservableTag[B]) = flatMap(ev1)
+  def <*>[B: ObservableTag](f: Observable[A => B]) = ota.ap(f)(self)
   def tuple[B](f: Observable[B]): Observable[(A,B)] = oapp.tuple2(self, f)
-  final def *>[B](fb: ObjObs[B]): Observable[B] = oapp.map2(self,fb)((_,b) => b)
-  final def <*[B](fb: ObjObs[B]): Observable[A] = oapp.map2(self,fb)((a,_) => a)
+  final def *>[B](fb: Observable[B]): fb.type = fb
+  final def <*[B](fb: Observable[B]): self.type = self
 
   final def |@|[B, B1](fb: ObservableValue[B, B1]) = ObservableTupler(self, fb)
 
@@ -258,9 +229,9 @@ final class ObservableOfMapLike[A, B, C](val self: ObservableValue[C, C])(implic
 }
 
 final class RichProperty[A, B](val inner: Property[A, B]) extends AnyVal {
-  def biMap[A1 <: AnyRef](push: A => A1, pull: A1 => A): ObjectProperty[A1] = {
+  def biMap[A1](push: A => A1, pull: A1 => A)(implicit ot: ObservableTag[A1]): ot.PropType = {
     val original = push(inner.value)
-    val op = ObjectProperty[A1](original)
+    val op = ot.property(original)
     inner onChange {
       val oldVal = op.value
       val newVal = push(inner.value)
