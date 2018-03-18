@@ -14,7 +14,7 @@ object Dependencies {
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
   final val slf4jVersion       = "1.7.25"
-  final val log4sVersion       = "1.4.0"
+  final val log4sVersion       = "1.6.0"
   final val logbackVersion     = "1.2.3"
   final val commonsVfsVersion  = "2.2"
   final val commonsIoVersion   = "2.4"
