@@ -19,7 +19,7 @@ object Dependencies {
   final val commonsVfsVersion  = "2.2"
   final val commonsIoVersion   = "2.4"
   final val spireVersion       = "0.13.0"
-  final val groovyVersion      = "2.4.6"
+  final val groovyVersion      = "2.4.13"
   final val scalaJava8Version  = "0.8.0"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
