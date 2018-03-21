@@ -100,3 +100,9 @@ change.
   * Update Cats to 1.1.0
   * Update Scala 2.11 to 2.11.12
 
+#### 0.14.2
+
+* Update Scala 2.12 to 2.12.5
+* Library updates
+  * Update Log4s to 1.6.1
+  * Update Gerweck Utils to 3.0.2
