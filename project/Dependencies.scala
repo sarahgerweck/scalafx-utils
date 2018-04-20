@@ -4,7 +4,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                  Akka                                  */
   /* ********************************************************************** */
-  final val akkaVersion = "2.5.11"
+  final val akkaVersion = "2.5.12"
 
   val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion

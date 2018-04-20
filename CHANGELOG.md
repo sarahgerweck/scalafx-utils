@@ -106,3 +106,8 @@ change.
 * Library updates
   * Update Log4s to 1.6.1
   * Update Gerweck Utils to 3.0.2
+
+#### 0.14.3
+
+- Library updates
+  - Update Akka to 2.5.12
