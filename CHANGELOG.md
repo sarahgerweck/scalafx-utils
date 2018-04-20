@@ -111,3 +111,4 @@ change.
 
 - Library updates
   - Update Akka to 2.5.12
+  - Update Gerweck Utils to 4.0.1
