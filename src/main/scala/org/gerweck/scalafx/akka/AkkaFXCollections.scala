@@ -2,7 +2,7 @@ package org.gerweck.scalafx.akka
 
 import language.implicitConversions
 
-import scala.collection.generic.{ Clearable, Growable }
+import scala.collection.mutable.{ Clearable, Growable }
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.util._

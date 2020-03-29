@@ -6,19 +6,24 @@ import java.util.function.{ Predicate => JPredicate }
 
 import scalafx.beans.property._
 import scalafx.beans.value._
-import scalafx.collections._
-import scalafx.collections.transformation._
+import scalafx.collections.ObservableSet
+import scalafx.collections.ObservableArray
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.transformation.FilteredBuffer
+import scala.collection.immutable.ArraySeq
 
 sealed trait ToFlatObservable[-A, +B] extends Calculable[A, B]
 object ToFlatObservable extends CalculableObservable[ToFlatObservable[_, _]] {
   implicit def obOps[A] = new ToFlatObservable[ObservableBuffer[A], Seq[A]] {
-    def recalculate(oba: ObservableBuffer[A]) = oba.toVector
+    override def recalculate(oba: ObservableBuffer[A]) = oba.toVector
   }
   implicit def oaOps[A] = new ToFlatObservable[ObservableArray[A, _, _], Seq[A]] {
-    def recalculate(oaa: ObservableArray[A, _, _]) = oaa.toVector
+    override def recalculate(oaa: ObservableArray[A, _, _]) = {
+      ArraySeq.unsafeWrapArray(oaa.toArray)
+    }
   }
   implicit def osOps[A] = new ToFlatObservable[ObservableSet[A], collection.immutable.Set[A]] {
-    def recalculate(os: ObservableSet[A]) = os.toSet
+    override def recalculate(os: ObservableSet[A]) = os.toSet
   }
 }
 
@@ -45,11 +50,11 @@ final class RichObservableBuffer[A](val obs: ObservableBuffer[A]) extends AnyVal
   def observableSize = ObservableSized.toObservable(obs)
 
   def observeFiltered(predicate: A => Boolean) = {
-    new transformation.FilteredBuffer(obs, predicate)
+    new FilteredBuffer(obs, predicate)
   }
   /* The dummy implicit is here to ensure the `observeFiltered` methods all have different post-erasure types */
   def observeFiltered[B >: A](predicate: ObservableValue[JPredicate[B], JPredicate[B]])(implicit dummy: DummyImplicit): FilteredBuffer[A] = {
-    val fb = new transformation.FilteredBuffer(obs)
+    val fb = new FilteredBuffer(obs)
     fb.predicate <== predicate
     fb
   }
