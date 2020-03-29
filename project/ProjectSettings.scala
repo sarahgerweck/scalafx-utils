@@ -11,11 +11,11 @@ trait ProjectSettings
   override final val githubOrganization    = "sarahgerweck"
   override final val githubProject         = "scalafx-utils"
 
-  override final val buildScalaVersion     = "2.12.5"
-  override final val extraScalaVersions    = Seq("2.11.12")
+  override final val buildScalaVersion     = "2.13.1"
+  override final val extraScalaVersions    = Seq("2.11.12", "2.12.5")
   override final val defaultOptimize       = true
   override final val defaultOptimizeGlobal = false
-  override final val extraScalacOptions    = Seq("-Ypartial-unification")
+  override final val extraScalacOptions    = Seq() // Seq("-Ypartial-unification")
 
   override final val sonatypeResolver      = true
 
