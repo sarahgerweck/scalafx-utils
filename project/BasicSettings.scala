@@ -73,6 +73,8 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       var options = Seq.empty[String]
       val sv = sver.value
 
+      options :+= "-Xlint"
+      options :+= "-Xfatal-warnings"
       options :+= "-unchecked"
       options :+= "-feature"
       if (deprecation) {
@@ -160,8 +162,8 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
 
       if (sv.requireJava8) {
         options ++= Seq[String](
-          "-target", "1.8",
-          "-source", "1.8"
+          "-target", "11",
+          "-source", "11"
         )
       } else {
         options ++= Seq[String](

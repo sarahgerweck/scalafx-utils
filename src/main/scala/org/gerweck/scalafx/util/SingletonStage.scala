@@ -46,7 +46,7 @@ abstract class SingletonStage {
   /** Create the stage, or give it focus if it already exists.
     *
     * This needs to be executed within the UI thread. If you're not already within some kind
-    * of event handler, you need to use [[scalafx.application.Platform.runLater]].
+    * of event handler, you need to use [[scalafx.application.Platform$.runLater[R](op:=>R):Unit*]].
     */
   def showStage(): Unit = {
     State.currentStage match {

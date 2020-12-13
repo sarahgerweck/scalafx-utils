@@ -34,10 +34,10 @@ object Dependencies {
   val logback         = "ch.qos.logback"         %  "logback-classic"    % logbackVersion
   val spire           = "org.spire-math"         %% "spire"              % spireVersion
   val commonsIo       = "commons-io"             %  "commons-io"         % commonsIoVersion
-  val groovy          = "org.codehaus.groovy"    %  "groovy-all"         % groovyVersion
+  // val groovy          = "org.codehaus.groovy"    %  "groovy-all"         % groovyVersion
   val gerweckUtil     = "org.gerweck.scala"      %% "gerweck-utils"      % gerweckUtilVersion
   val gerweckUtilAkka = "org.gerweck.scala"      %% "gerweck-utils-akka" % gerweckUtilVersion
-  val scalaJava8      = "org.scala-lang.modules" %% "scala-java8-compat" % scalaJava8Version
+  // val scalaJava8      = "org.scala-lang.modules" %% "scala-java8-compat" % scalaJava8Version
   val cats            = "org.typelevel"          %% "cats-core"          % catsVersion
   val shapeless       = "com.chuusai"            %% "shapeless"          % shapelessVersion
   val scallop         = "org.rogach"             %% "scallop"            % scallopVersion
@@ -81,8 +81,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                ScalaFX                                 */
   /* ********************************************************************** */
-  // final val scalaFxVersion = "8.0.144-R12"
-  final val scalaFxVersion = "12.0.2-R18"
+  final val scalaFxVersion = "14-R19"
 
   val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
 

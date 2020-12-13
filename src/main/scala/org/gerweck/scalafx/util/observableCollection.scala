@@ -1,6 +1,6 @@
 package org.gerweck.scalafx.util
 
-import scala.compat.java8.FunctionConverters._
+// import scala.compat.java8.FunctionConverters._
 
 import java.util.function.{ Predicate => JPredicate }
 
@@ -58,9 +58,9 @@ final class RichObservableBuffer[A](val obs: ObservableBuffer[A]) extends AnyVal
     fb.predicate <== predicate
     fb
   }
-  def observeFiltered[B >: A](predicate: Observable[B => Boolean]): FilteredBuffer[A] = {
-    observeFiltered(predicate.map[JPredicate[A]](asJavaPredicate))
-  }
+  // def observeFiltered[B >: A](predicate: Observable[B => Boolean]): FilteredBuffer[A] = {
+  //   observeFiltered(predicate.map[JPredicate[A]](asJavaPredicate))
+  // }
 }
 
 final class RichObservableArray[A, B <: ObservableArray[A, B, C], C <: javafx.collections.ObservableArray[C]](val oaa: ObservableArray[A, B, C]) extends AnyVal with RichObservableSeqLike[A] {

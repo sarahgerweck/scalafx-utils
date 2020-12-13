@@ -46,3 +46,10 @@ bin
 /log
 /*.script
 typescript
+
+.metals
+.sbt
+.vscode
+.bsp
+.bloop
+metals.sbt

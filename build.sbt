@@ -27,21 +27,21 @@ lazy val root = (project in file ("."))
       jclBridge   % "runtime,optional",
       log4jBridge % "runtime,optional",
       logback     % "runtime,optional",
-      gerweckUtil,
-      scalaJava8,
+      // gerweckUtil,
+      // scalaJava8,
       scalaFx,
       cats,
       shapeless
     ),
 
 	libraryDependencies ++= javaFXModules.map( m =>
-	  "org.openjfx" % s"javafx-$m" % "12.0.2" classifier osName
+	  "org.openjfx" % s"javafx-$m" % "11.0.2" classifier osName
 	),
 
     /* Akka dependencies */
-    libraryDependencies ++= Seq (
-      akkaActor       % "optional",
-      akkaStream      % "optional",
-      gerweckUtilAkka % "optional"
-    )
+    // libraryDependencies ++= Seq (
+    //   akkaActor       % "optional",
+    //   akkaStream      % "optional",
+    //   gerweckUtilAkka % "optional"
+    // )
   )

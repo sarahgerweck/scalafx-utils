@@ -42,7 +42,7 @@ private object ObservableImplicits {
       val prop = ObjectProperty[B](originalValue)
 
       var prevValue = originalValue
-      def changeHandler = prop.synchronized {
+      def changeHandler() = prop.synchronized {
         val newVal = recalculate()
         if (prevValue != newVal) {
           prop.value = newVal
@@ -50,7 +50,7 @@ private object ObservableImplicits {
         }
       }
 
-      a onChange changeHandler
+      a onChange changeHandler()
       prop
     }
 
@@ -68,7 +68,7 @@ private object ObservableImplicits {
 
       var prevValue = originalValue
 
-      def changeHandler = prop.synchronized {
+      def changeHandler() = prop.synchronized {
         val newVal = recalculate()
         if (prevValue != newVal) {
           prop.value = newVal
@@ -76,8 +76,8 @@ private object ObservableImplicits {
         }
       }
 
-      fa onChange changeHandler
-      f onChange changeHandler
+      fa onChange changeHandler()
+      f onChange changeHandler()
 
       prop
     }
@@ -110,7 +110,7 @@ private object ObservableImplicits {
           prevValue = newVal
         }
       }
-      var innerSub = oa() onChange innerHandle
+      var innerSub = oa() onChange innerHandle()
 
       var prevOuter = oa()
       def outerHandle() = prop.synchronized {
@@ -118,13 +118,13 @@ private object ObservableImplicits {
         /* We need reference equality here: we're subscribing to a specific object. */
         if (prevOuter ne newOuter) {
           innerSub.cancel()
-          innerSub = newOuter onChange innerHandle
+          innerSub = newOuter onChange innerHandle()
           prevOuter = newOuter
           innerHandle()
         }
       }
 
-      ooa onChange outerHandle
+      ooa onChange outerHandle()
 
       prop
     }
@@ -159,7 +159,7 @@ private object ObservableImplicits {
           prevValue = newVal
         }
       }
-      var innerSub = oa() onChange innerHandle
+      var innerSub = oa() onChange innerHandle()
 
       var prevOuter = oa()
       def outerHandle() = prop.synchronized {
@@ -167,13 +167,13 @@ private object ObservableImplicits {
         /* We need reference equality here: we're subscribing to a specific object. */
         if (prevOuter ne newOuter) {
           innerSub.cancel()
-          innerSub = newOuter onChange innerHandle
+          innerSub = newOuter onChange innerHandle()
           prevOuter = newOuter
           innerHandle()
         }
       }
 
-      ooa onChange outerHandle
+      ooa onChange outerHandle()
 
       prop
     }
@@ -218,6 +218,8 @@ final class RichObservable[A, C](val self: ObservableValue[A, C]) extends AnyVal
   def tuple[B](f: Observable[B]): Observable[(A,B)] = oapp.tuple2(self, f)
   final def *>[B](fb: ObjObs[B]): Observable[B] = oapp.map2(self,fb)((_,b) => b)
   final def <*[B](fb: ObjObs[B]): Observable[A] = oapp.map2(self,fb)((a,_) => a)
+  final def >>[B](fb: => ObjObs[B]): Observable[B] = oapp.map2(self, fb)((_, b) => b)
+  final def <<[B](fb: => ObjObs[B]): Observable[A] = oapp.map2(self, fb)((a, _) => a)
 
   final def |@|[B, B1](fb: ObservableValue[B, B1]) = ObservableTupler(self, fb)
 

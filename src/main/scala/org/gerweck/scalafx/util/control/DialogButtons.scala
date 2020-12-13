@@ -5,7 +5,6 @@ import org.log4s._
 
 import scalafx.Includes._
 import scalafx.event.ActionEvent
-import scalafx.event.ActionEvent
 import scalafx.geometry.Insets
 import scalafx.scene.Node
 import scalafx.scene.control._
@@ -13,7 +12,6 @@ import scalafx.scene.layout._
 import scalafx.stage.Stage
 import javafx.scene.{ Node => JNode }
 import javafx.scene.layout.{ Region => JRegion }
-import scalafx.delegate.SFXDelegate
 
 /** A standard button bar with the major dialog buttons.
   *
@@ -72,7 +70,7 @@ class DialogButtons(stage: Stage, showOk: Boolean = true, showApply: Boolean = t
     }
   }
 
-  protected[control] def mainLayout = new VBox(Separators.horizontal, bar) {
+  protected[control] def mainLayout = new VBox(Separators.horizontal(), bar) {
     hgrow = Priority.Always
   }
 

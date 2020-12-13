@@ -28,7 +28,7 @@ object HorizontalControlPanel {
             alignment = Pos.CenterRight
           }
         case SeparatorEntry =>
-          Separators.vertical
+          Separators.vertical()
       }
     }
 }
@@ -56,9 +56,6 @@ object ControlPanel {
   def apply(controls: ControlPanelEntry*): Pane = VerticalControlPanel(controls: _*)
 
   private[this] lazy val defaultFont = new Font(Font.default)
-  private[this] lazy val boldFont = {
-    Font(defaultFont.family, FontWeight.Bold, defaultFont.size)
-  }
 
   private[this] lazy val labelsFont = defaultFont
 
