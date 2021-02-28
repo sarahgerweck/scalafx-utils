@@ -12,7 +12,6 @@ object Dependencies {
   final val spireVersion       = "0.13.0"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
-  final val gerweckUtilVersion = "5.0.1"
   final val catsVersion        = "2.4.2"
   final val shapelessVersion   = "2.3.3"
   final val scallopVersion     = "1.0.1"
@@ -24,8 +23,6 @@ object Dependencies {
   val logback         = "ch.qos.logback"         %  "logback-classic"    % logbackVersion
   val spire           = "org.spire-math"         %% "spire"              % spireVersion
   val commonsIo       = "commons-io"             %  "commons-io"         % commonsIoVersion
-  val gerweckUtil     = "org.gerweck.scala"      %% "gerweck-utils"      % gerweckUtilVersion
-  val gerweckUtilAkka = "org.gerweck.scala"      %% "gerweck-utils-akka" % gerweckUtilVersion
   val cats            = "org.typelevel"          %% "cats-core"          % catsVersion
   val shapeless       = "com.chuusai"            %% "shapeless"          % shapelessVersion
   val scallop         = "org.rogach"             %% "scallop"            % scallopVersion
