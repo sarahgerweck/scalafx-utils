@@ -2,28 +2,18 @@ import sbt._
 
 object Dependencies {
   /* ********************************************************************** */
-  /*                                  Akka                                  */
-  /* ********************************************************************** */
-  final val akkaVersion = "2.5.26"
-
-  val akkaActor  = "com.typesafe.akka" %% "akka-actor"  % akkaVersion
-  val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion
-
-  /* ********************************************************************** */
   /*                          Utility Dependencies                          */
   /* ********************************************************************** */
-  final val slf4jVersion       = "1.7.28"
-  final val log4sVersion       = "1.8.2"
+  final val slf4jVersion       = "1.7.30"
+  final val log4sVersion       = "1.9.0"
   final val logbackVersion     = "1.2.3"
   final val commonsVfsVersion  = "2.2"
   final val commonsIoVersion   = "2.4"
   final val spireVersion       = "0.13.0"
-  final val groovyVersion      = "2.4.13"
-  final val scalaJava8Version  = "0.9.1"
   final val scalaParserVersion = "1.0.4"
   final val scalaXmlVersion    = "1.0.5"
   final val gerweckUtilVersion = "5.0.1"
-  final val catsVersion        = "2.1.1"
+  final val catsVersion        = "2.4.2"
   final val shapelessVersion   = "2.3.3"
   final val scallopVersion     = "1.0.1"
 
@@ -34,10 +24,8 @@ object Dependencies {
   val logback         = "ch.qos.logback"         %  "logback-classic"    % logbackVersion
   val spire           = "org.spire-math"         %% "spire"              % spireVersion
   val commonsIo       = "commons-io"             %  "commons-io"         % commonsIoVersion
-  // val groovy          = "org.codehaus.groovy"    %  "groovy-all"         % groovyVersion
   val gerweckUtil     = "org.gerweck.scala"      %% "gerweck-utils"      % gerweckUtilVersion
   val gerweckUtilAkka = "org.gerweck.scala"      %% "gerweck-utils-akka" % gerweckUtilVersion
-  // val scalaJava8      = "org.scala-lang.modules" %% "scala-java8-compat" % scalaJava8Version
   val cats            = "org.typelevel"          %% "cats-core"          % catsVersion
   val shapeless       = "com.chuusai"            %% "shapeless"          % shapelessVersion
   val scallop         = "org.rogach"             %% "scallop"            % scallopVersion
@@ -81,7 +69,7 @@ object Dependencies {
   /* ********************************************************************** */
   /*                                ScalaFX                                 */
   /* ********************************************************************** */
-  final val scalaFxVersion = "14-R19"
+  final val scalaFxVersion = "15.0.1-R21"
 
   val scalaFx = "org.scalafx" %% "scalafx" % scalaFxVersion
 
