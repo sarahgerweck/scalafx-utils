@@ -29,7 +29,8 @@ lazy val root = (project in file ("."))
       logback     % "runtime,optional",
       scalaFx,
       cats,
-      shapeless
+      shapeless,
+      scalaCollectionCompat
     ),
 
     libraryDependencies ++= javaFXModules.map( m =>
